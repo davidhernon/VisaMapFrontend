@@ -1,6 +1,7 @@
 import { readSync } from 'fs'
 import React from 'react'
 import ReactMapGL from 'react-map-gl'
+import { CountryDetails } from 'types/map-types'
 
 const getWindowSize = () => {
   return {
@@ -9,7 +10,10 @@ const getWindowSize = () => {
   }
 }
 
-const Map: React.FC<{ token: string }> = ({ token }) => {
+const Map: React.FC<{ token: string; countryDetailsMapping: Record<string, CountryDetails> }> = ({
+  countryDetailsMapping,
+  token,
+}) => {
   const [viewport, setViewport] = React.useState({
     width: 0,
     height: 0,
