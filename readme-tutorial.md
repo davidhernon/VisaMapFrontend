@@ -41,6 +41,8 @@ Resizing the window will cut off our map view, or leave whitespace around our ma
 
 Usually, we might use useEffectLayout to accomplish this, and recalculate the `window` dimensions. However, in NextJS we can run into problems when trying to access `window` since it does not exist in server rendered.
 
+(Read more here)[https://medium.com/frontend-digest/why-is-window-not-defined-in-nextjs-44daf7b4604e#:~:text=But%20why%20is%20window%20undefined,is%20not%20run%20in%20NodeJS.]
+
 To avoid this, well attach a resize listener when the component loads that will fire a function to handle calculating our resize on the fly.
 
 ```ts
@@ -54,3 +56,6 @@ To avoid this, well attach a resize listener when the component loads that will 
     })
   }, [])
 ```
+
+## Add our geojson
+
