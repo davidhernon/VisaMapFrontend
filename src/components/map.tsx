@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactMapGL from 'react-map-gl'
 import { CountryDetails } from 'types/map-types'
+import { getWindowSize } from '@src/components/helpers/map-helpers'
 
 enum MapStatus {
   Init = 'Init',
@@ -8,18 +9,18 @@ enum MapStatus {
   Loaded = 'Loaded',
 }
 
-const getWindowSize = () => {
-  return {
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }
+enum CountryTypes {
+  CovidBan = 'countries-covid-ban',
+  VisaFree = 'countries-visa-free',
+  VisaOnArrival = 'countries-visa-on-arrival',
+  VisaRequired = 'countries-visa-required',
+  EVisa = 'countries-e-visa',
 }
 
 const Map: React.FC<{
   token: string
-  countryDetailsMapping: Record<string, CountryDetails>
   countryDetailsList: CountryDetails[]
-}> = ({ countryDetailsMapping, countryDetailsList, token }) => {
+}> = ({ countryDetailsList, token }) => {
   const mapRef = React.useRef<null | ReactMapGL>(null)
   const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init)
   const [viewport, setViewport] = React.useState({
@@ -59,17 +60,11 @@ const Map: React.FC<{
       .map(({ code }) => code)
       .filter((code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code))
 
-    const allCodes: string[] = countryDetailsList.map(({ code }) => code)
-
-    map.setFilter('countries-covid-ban', ['in', 'ISO_A2'].concat(covidBannedCountries))
-    map.setFilter('countries-visa-free', ['in', 'ISO_A2'].concat(visaFreeCountries))
-    map.setFilter('countries-visa-on-arrival', ['in', 'ISO_A2'].concat(visaOnArrivalCountries))
-    map.setFilter('countries-visa-required', ['in', 'ISO_A2'].concat(visaRequired))
-    map.setFilter('countries-e-visa', ['in', 'ISO_A2'].concat(eVisa))
-    map.setFilter(
-      'countries-no-data',
-      ['in', 'ISO_A2'].filter((iso2) => !allCodes.includes(iso2)),
-    )
+    map.setFilter(CountryTypes.CovidBan, ['in', 'ISO_A2'].concat(covidBannedCountries))
+    map.setFilter(CountryTypes.VisaFree, ['in', 'ISO_A2'].concat(visaFreeCountries))
+    map.setFilter(CountryTypes.VisaOnArrival, ['in', 'ISO_A2'].concat(visaOnArrivalCountries))
+    map.setFilter(CountryTypes.VisaRequired, ['in', 'ISO_A2'].concat(visaRequired))
+    map.setFilter(CountryTypes.EVisa, ['in', 'ISO_A2'].concat(eVisa))
   }, [countryDetailsList, mapStatus])
 
   React.useEffect(() => {
@@ -93,7 +88,7 @@ const Map: React.FC<{
       })
 
       map.addLayer({
-        id: 'countries-covid-ban',
+        id: CountryTypes.CovidBan,
         source: 'countries-source',
         type: 'fill',
         paint: {
@@ -104,7 +99,7 @@ const Map: React.FC<{
       })
 
       map.addLayer({
-        id: 'countries-visa-free',
+        id: CountryTypes.VisaFree,
         source: 'countries-source',
         type: 'fill',
         paint: {
@@ -115,7 +110,7 @@ const Map: React.FC<{
       })
 
       map.addLayer({
-        id: 'countries-visa-on-arrival',
+        id: CountryTypes.VisaOnArrival,
         source: 'countries-source',
         type: 'fill',
         paint: {
@@ -126,7 +121,7 @@ const Map: React.FC<{
       })
 
       map.addLayer({
-        id: 'countries-visa-required',
+        id: CountryTypes.VisaRequired,
         source: 'countries-source',
         type: 'fill',
         paint: {
@@ -137,22 +132,11 @@ const Map: React.FC<{
       })
 
       map.addLayer({
-        id: 'countries-e-visa',
+        id: CountryTypes.EVisa,
         source: 'countries-source',
         type: 'fill',
         paint: {
           'fill-color': '#64b5f6',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
-
-      map.addLayer({
-        id: 'countries-no-data',
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#90a4ae',
           'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
           'fill-opacity': 0.75,
         },
