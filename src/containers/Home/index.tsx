@@ -17,7 +17,7 @@ const Home: React.FC = () => {
   return (
     <>
       <h1 data-testid="helloH1" className="text-xl text-gray-900">
-        Hello from {SITE_NAME}, viewing details for "{countryCode}"
+        {SITE_NAME}, visa status for "{countryCode}"
       </h1>
       {MAPBOX_TOKEN && <Map countryDetailsList={countryDetailsList} token={MAPBOX_TOKEN}></Map>}
     </>
