@@ -1,20 +1,7 @@
 import React from 'react'
 import ReactMapGL from 'react-map-gl'
 import { CountryDetails } from 'types/map-types'
-import {
-  getCovidBannedCountries,
-  getEVisaCountries,
-  getVisaFreeCountries,
-  getVisaOnArrivalCountries,
-  getVisaRequiredCountries,
-  getWindowSize,
-} from '@src/components/helpers/map-helpers'
-
-enum CountrySource {
-  Id = 'country-source',
-  Url = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-  DataType = 'geojson',
-}
+import { getWindowSize } from '@src/components/helpers/map-helpers'
 
 enum MapStatus {
   Init = 'Init',
@@ -22,12 +9,12 @@ enum MapStatus {
   Loaded = 'Loaded',
 }
 
-enum CountryTypes {
-  CovidBan = 'countries-covid-ban',
-  VisaFree = 'countries-visa-free',
-  VisaOnArrival = 'countries-visa-on-arrival',
-  VisaRequired = 'countries-visa-required',
-  EVisa = 'countries-e-visa',
+const CountryTypes = {
+  CovidBan: 'countries-covid-ban',
+  VisaFree: 'countries-visa-free',
+  VisaOnArrival: 'countries-visa-on-arrival',
+  VisaRequired: 'countries-visa-required',
+  EVisa: 'countries-e-visa',
 }
 
 const Map: React.FC<{
@@ -49,17 +36,32 @@ const Map: React.FC<{
     if (!map || mapStatus === MapStatus.Loading || mapStatus === MapStatus.Init) {
       return
     }
-    const covidBannedCountries = getCovidBannedCountries(countryDetailsList)
-    const visaFreeCountries = getVisaFreeCountries(countryDetailsList).filter(
-      (code) => !covidBannedCountries.includes(code),
-    )
-    const visaOnArrivalCountries = getVisaOnArrivalCountries(countryDetailsList)
-    const visaRequired = getVisaRequiredCountries(countryDetailsList).filter(
-      (code) => !visaOnArrivalCountries.includes(code),
-    )
-    const eVisa = getEVisaCountries(countryDetailsList).filter(
-      (code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code),
-    )
+
+    const covidBannedCountries = countryDetailsList
+      .filter(({ details: { covidBan } }) => covidBan)
+      .map((countryDetail) => countryDetail.code)
+
+    const visaFreeCountries = countryDetailsList
+      .filter(({ details }) => !details.visaRequired)
+      .map((countryDetail) => countryDetail.code)
+      .filter((code) => !covidBannedCountries.includes(code))
+
+    const visaOnArrivalCountries = countryDetailsList
+      .filter(({ details: { visaOnArrival } }) => visaOnArrival)
+      .map((countryDetail) => countryDetail.code)
+
+    const visaRequired = countryDetailsList
+      .filter(({ details: { visaRequired } }) => visaRequired)
+      .map(({ code }) => code)
+      .filter((code) => !visaOnArrivalCountries.includes(code))
+
+    const eVisa = countryDetailsList
+      .filter(({ details: { eVisa } }) => eVisa)
+      .map(({ code }) => code)
+      .filter((code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code))
+
+    const allCodes: string[] = countryDetailsList.map(({ code }) => code)
+
     map.setFilter(CountryTypes.CovidBan, ['in', 'ISO_A2'].concat(covidBannedCountries))
     map.setFilter(CountryTypes.VisaFree, ['in', 'ISO_A2'].concat(visaFreeCountries))
     map.setFilter(CountryTypes.VisaOnArrival, ['in', 'ISO_A2'].concat(visaOnArrivalCountries))
@@ -82,9 +84,9 @@ const Map: React.FC<{
     })
 
     map.on('load', () => {
-      map.addSource(CountrySource.Id, {
-        type: CountrySource.DataType,
-        data: CountrySource.Url,
+      map.addSource('countries-source', {
+        type: 'geojson',
+        data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
       })
 
       map.addLayer({
@@ -156,7 +158,7 @@ const Map: React.FC<{
 
   return (
     <>
-      <h2>{mapStatus}</h2>
+      {mapStatus !== MapStatus.Loaded && <span className="absolute z-10">{mapStatus}</span>}
       <ReactMapGL
         ref={mapRef}
         mapboxApiAccessToken={token}
