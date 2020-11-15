@@ -59,3 +59,85 @@ To avoid this, well attach a resize listener when the component loads that will 
 
 ## Add our geojson
 
+I scraped info for every passport country holder and am holding it as local json in the project for now.
+
+I have plans to improve this pipeline but for the moment so much of the information is coming through scraped websites and not apis.
+
+I added a dynamic import for now, definitely needs a change later as this feels sketch.
+
+```ts
+map.addSource('countries-source', {
+  type: 'geojson',
+  data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+})
+
+map.addLayer({
+  id: 'countries-covid-ban',
+  source: 'countries-source',
+  type: 'fill',
+  paint: {
+    'fill-color': '#b73849',
+    'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
+    'fill-opacity': 0.75,
+  },
+})
+
+map.setFilter('countries-covid-ban', ['in', 'ISO_A2'].concat(['US'])) // This line lets us filter by country codes.
+
+```
+
+## Status Feedback
+
+I was annoyed trying to verify if I was waiting on my source to load or if there was an error loading the source so I added some basic loading indicators
+
+```js
+enum MapStatus {
+  Init,
+  Loading,
+  Loaded,
+}
+ ...
+
+const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init)
+
+...
+map.on('sourcedataloading', () => {
+  setMapStatus(MapStatus.Loading)
+})
+
+map.on('sourcedata', () => {
+  setMapStatus(MapStatus.Loaded)
+})
+
+<>
+  <h2>{mapStatus}</h2>
+  <ReactMapGL
+    ref={mapRef}
+    mapboxApiAccessToken={token}
+    {...viewport}
+    onViewportChange={(viewport) => setViewport(viewport)}
+  />
+</>
+
+{GIF OF LOADING}
+```
+
+Since we re-render the map when countryDetailsList is updated I put the filter in a useEffect
+```ts
+  React.useEffect(() => {
+    const map = mapRef.current?.getMap()
+    if (!map) {
+      return
+    }
+    map.setFilter(
+      'countries-covid-ban',
+      ['in', 'ISO_A2'].concat(
+        countryDetailsList.filter(({ details: { covidBan } }) => covidBan).map((countryDetail) => countryDetail.code),
+      ),
+    )
+  }, [countryDetailsList])
+
+  {IMAGE OF US BANNED COUNTRIES}
+  ```
+
+Now Im going to add a new layer and a new filter for coloring the other countries

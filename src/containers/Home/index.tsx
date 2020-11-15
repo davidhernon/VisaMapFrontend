@@ -17,13 +17,13 @@ const convertCountryDetailModuleToList = (module: any) => {
 const Home: React.FC = () => {
   const { SITE_NAME } = process.env
   const { MAPBOX_TOKEN } = process.env // https://github.com/vercel/next.js/issues/6888
-  const countryCode = 'us' // harding coding this until we build ui to handle
+  const countryCode = 'US' // harding coding this until we build ui to handle
   const [countryDetailsMapping, setCountryDetailsMapping] = React.useState<Record<string, CountryDetails>>({})
-
+  const [countryDetailsList, setCountryDetailsList] = React.useState<CountryDetails[]>([])
   React.useEffect(() => {
     import(`../../../public/json/${countryCode}.json`).then((countryDetailModule) => {
       console.log('import')
-      const countryDetailsList = convertCountryDetailModuleToList(countryDetailModule)
+      const countryDetailsList = convertCountryDetailModuleToList(countryDetailModule).filter((cd) => cd !== undefined)
       const countryMapping = countryDetailsList.reduce((accum, countryDetail) => {
         if (!!!countryDetail) {
           return accum
@@ -34,14 +34,22 @@ const Home: React.FC = () => {
         }
       }, {} as Record<string, CountryDetails>)
       setCountryDetailsMapping(countryMapping)
+      setCountryDetailsList(countryDetailsList)
     })
   }, [])
-
   return (
-    <h1 data-testid="helloH1" className="text-xl text-gray-900">
-      Hello from {SITE_NAME}, viewing details for {countryCode}
-      {MAPBOX_TOKEN && <Map countryDetailsMapping={countryDetailsMapping} token={MAPBOX_TOKEN}></Map>}
-    </h1>
+    <>
+      <h1 data-testid="helloH1" className="text-xl text-gray-900">
+        Hello from {SITE_NAME}, viewing details for "{countryCode}"
+      </h1>
+      {MAPBOX_TOKEN && (
+        <Map
+          countryDetailsMapping={countryDetailsMapping}
+          countryDetailsList={countryDetailsList}
+          token={MAPBOX_TOKEN}
+        ></Map>
+      )}
+    </>
   )
 }
 
