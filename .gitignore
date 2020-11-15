@@ -28,4 +28,4 @@ yarn-error.log*
 .env
 
 #static
-/public/json/*
+/public/json/
