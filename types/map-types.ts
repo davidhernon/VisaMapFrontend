@@ -1,5 +1,5 @@
 export interface CountryDetails {
-    code: 'AF'
+    code: string // 2 letter country ISO code, etc; 'US'
     details: {
       covidBan: boolean
       eVisa: boolean

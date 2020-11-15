@@ -10,6 +10,12 @@ import {
   getWindowSize,
 } from '@src/components/helpers/map-helpers'
 
+enum CountrySource {
+  Id = 'country-source',
+  Url = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+  DataType = 'geojson',
+}
+
 enum MapStatus {
   Init = 'Init',
   Loading = 'Loading',
@@ -43,7 +49,6 @@ const Map: React.FC<{
     if (!map || mapStatus === MapStatus.Loading || mapStatus === MapStatus.Init) {
       return
     }
-
     const covidBannedCountries = getCovidBannedCountries(countryDetailsList)
     const visaFreeCountries = getVisaFreeCountries(countryDetailsList).filter(
       (code) => !covidBannedCountries.includes(code),
@@ -77,9 +82,9 @@ const Map: React.FC<{
     })
 
     map.on('load', () => {
-      map.addSource('countries-source', {
-        type: 'geojson',
-        data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+      map.addSource(CountrySource.Id, {
+        type: CountrySource.DataType,
+        data: CountrySource.Url,
       })
 
       map.addLayer({
