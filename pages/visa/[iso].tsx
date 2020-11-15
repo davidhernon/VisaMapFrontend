@@ -9,14 +9,25 @@ const Visa = () => {
   const { MAPBOX_TOKEN } = process.env
   const router = useRouter()
   const { iso } = router.query
-  const countryCode = iso?.toString() || 'US' //handle exceptions and set default to US, pretty hack, needs a refactor
+  console.log({ iso })
+  const countryCode = iso?.toString().toUpperCase() //handle exceptions and set default to US, pretty hack, needs a refactor
   const [countryDetailsList, setCountryDetailsList] = React.useState<CountryDetails[]>([])
   React.useEffect(() => {
-    import(`@src/../public/json/${countryCode}.json`).then((countryDetailModule) => {
-      const countryDetailsList = convertCountryDetailModuleToList(countryDetailModule).filter((cd) => cd !== undefined)
-      setCountryDetailsList(countryDetailsList)
-    })
-  }, [])
+    if (!countryCode) {
+      return
+    }
+    import(`@src/../public/json/${countryCode}.json`)
+      .then((countryDetailModule) => {
+        console.log({ import: countryDetailModule })
+        const countryDetailsList = convertCountryDetailModuleToList(countryDetailModule).filter(
+          (cd) => cd !== undefined,
+        )
+        setCountryDetailsList(countryDetailsList)
+      })
+      .catch((e) => {
+        throw new Error(e)
+      })
+  }, [countryCode])
 
   return (
     <>
