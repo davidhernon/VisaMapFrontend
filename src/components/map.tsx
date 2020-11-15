@@ -1,7 +1,14 @@
 import React from 'react'
 import ReactMapGL from 'react-map-gl'
 import { CountryDetails } from 'types/map-types'
-import { getWindowSize } from '@src/components/helpers/map-helpers'
+import {
+  getCovidBannedCountries,
+  getEVisaCountries,
+  getVisaFreeCountries,
+  getVisaOnArrivalCountries,
+  getVisaRequiredCountries,
+  getWindowSize,
+} from '@src/components/helpers/map-helpers'
 
 enum MapStatus {
   Init = 'Init',
@@ -37,29 +44,17 @@ const Map: React.FC<{
       return
     }
 
-    const covidBannedCountries = countryDetailsList
-      .filter(({ details: { covidBan } }) => covidBan)
-      .map((countryDetail) => countryDetail.code)
-
-    const visaFreeCountries = countryDetailsList
-      .filter(({ details }) => !details.visaRequired)
-      .map((countryDetail) => countryDetail.code)
-      .filter((code) => !covidBannedCountries.includes(code))
-
-    const visaOnArrivalCountries = countryDetailsList
-      .filter(({ details: { visaOnArrival } }) => visaOnArrival)
-      .map((countryDetail) => countryDetail.code)
-
-    const visaRequired = countryDetailsList
-      .filter(({ details: { visaRequired } }) => visaRequired)
-      .map(({ code }) => code)
-      .filter((code) => !visaOnArrivalCountries.includes(code))
-
-    const eVisa = countryDetailsList
-      .filter(({ details: { eVisa } }) => eVisa)
-      .map(({ code }) => code)
-      .filter((code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code))
-
+    const covidBannedCountries = getCovidBannedCountries(countryDetailsList)
+    const visaFreeCountries = getVisaFreeCountries(countryDetailsList).filter(
+      (code) => !covidBannedCountries.includes(code),
+    )
+    const visaOnArrivalCountries = getVisaOnArrivalCountries(countryDetailsList)
+    const visaRequired = getVisaRequiredCountries(countryDetailsList).filter(
+      (code) => !visaOnArrivalCountries.includes(code),
+    )
+    const eVisa = getEVisaCountries(countryDetailsList).filter(
+      (code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code),
+    )
     map.setFilter(CountryTypes.CovidBan, ['in', 'ISO_A2'].concat(covidBannedCountries))
     map.setFilter(CountryTypes.VisaFree, ['in', 'ISO_A2'].concat(visaFreeCountries))
     map.setFilter(CountryTypes.VisaOnArrival, ['in', 'ISO_A2'].concat(visaOnArrivalCountries))
