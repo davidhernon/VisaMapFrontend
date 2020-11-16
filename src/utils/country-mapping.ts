@@ -657,10 +657,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "RW"
     },
     {
-        "name": "Saint Helena",
-        "code": "SH"
-    },
-    {
         "name": "Saint Lucia",
         "code": "LC"
     },
