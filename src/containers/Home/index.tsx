@@ -20,7 +20,7 @@ const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
 
   return (
     <>
-      <div className="absolute m-2 z-10 bg-white opacity-75 p-2">
+      <div className="absolute m-2 z-20 bg-white opacity-75 p-2">
         <span className="opacity-100">
           <h1 data-testid="helloH1" className="text-xl text-gray-900">
             Visa restrictions for {getCountryNameFromCode(iso)}

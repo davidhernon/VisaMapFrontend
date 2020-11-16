@@ -2,6 +2,7 @@ import React from 'react'
 import ReactMapGL from 'react-map-gl'
 import { CountryDetails } from 'types/map-types'
 import { getWindowSize } from '@src/components/helpers/map-helpers'
+import mapboxgl from 'mapbox-gl'
 
 enum MapStatus {
   Init = 'Init',
@@ -9,13 +10,68 @@ enum MapStatus {
   Loaded = 'Loaded',
 }
 
-const CountryTypes = {
-  CovidBan: 'countries-covid-ban',
-  VisaFree: 'countries-visa-free',
-  VisaOnArrival: 'countries-visa-on-arrival',
-  VisaRequired: 'countries-visa-required',
-  EVisa: 'countries-e-visa',
+const countryDataSource: {
+  id: string
+  source: mapboxgl.AnySourceData
+} = {
+  id: 'countries-source',
+  source: {
+    type: 'geojson',
+    data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+  },
 }
+
+const LoadingSvg = () => (
+  <svg width="54px" height="54px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+    <circle
+      cx="50"
+      cy="50"
+      r="32"
+      stroke-width="8"
+      stroke="#64b5f6"
+      stroke-dasharray="50.26548245743669 50.26548245743669"
+      fill="none"
+      stroke-linecap="round"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        dur="1.6949152542372878s"
+        repeatCount="indefinite"
+        keyTimes="0;1"
+        values="0 50 50;360 50 50"
+      ></animateTransform>
+    </circle>
+    <circle
+      cx="50"
+      cy="50"
+      r="23"
+      stroke-width="8"
+      stroke="#2bd47d"
+      stroke-dasharray="36.12831551628262 36.12831551628262"
+      stroke-dashoffset="36.12831551628262"
+      fill="none"
+      stroke-linecap="round"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        dur="1.6949152542372878s"
+        repeatCount="indefinite"
+        keyTimes="0;1"
+        values="0 50 50;-360 50 50"
+      ></animateTransform>
+    </circle>
+  </svg>
+)
+
+/**
+ * Mapbox Expression Helper
+ * Returns expression that evaluates to true or false if the selected field is in a given array
+ */
+const includesField = (field: string) => (array: (string | number)[]) => ['in', ['get', field], ['literal', array]]
+
+const includesIso = includesField('ISO_A2')
 
 const Map: React.FC<{
   token: string
@@ -33,8 +89,19 @@ const Map: React.FC<{
 
   React.useEffect(() => {
     const map = mapRef.current?.getMap()
-    if (!map || mapStatus === MapStatus.Loading || mapStatus === MapStatus.Init) {
+    if (
+      !map ||
+      mapStatus === MapStatus.Loading ||
+      mapStatus === MapStatus.Init ||
+      !map.getSource(countryDataSource.id) ||
+      (map.getSource(countryDataSource.id) && !map.isSourceLoaded(countryDataSource.id))
+    ) {
       return
+    }
+
+    const layer = map.getLayer('country-status')
+    if (layer) {
+      map.removeLayer('country-status')
     }
 
     const covidBannedCountries = countryDetailsList
@@ -46,6 +113,8 @@ const Map: React.FC<{
       .map((countryDetail) => countryDetail.code)
       .filter((code) => !covidBannedCountries.includes(code))
 
+    const eVisa = countryDetailsList.filter(({ details: { eVisa } }) => eVisa).map(({ code }) => code)
+
     const visaOnArrivalCountries = countryDetailsList
       .filter(({ details: { visaOnArrival } }) => visaOnArrival)
       .map((countryDetail) => countryDetail.code)
@@ -55,18 +124,29 @@ const Map: React.FC<{
       .map(({ code }) => code)
       .filter((code) => !visaOnArrivalCountries.includes(code))
 
-    const eVisa = countryDetailsList
-      .filter(({ details: { eVisa } }) => eVisa)
-      .map(({ code }) => code)
-      .filter((code) => !visaOnArrivalCountries.includes(code) || !visaFreeCountries.includes(code))
-
-    const allCodes: string[] = countryDetailsList.map(({ code }) => code)
-
-    map.setFilter(CountryTypes.CovidBan, ['in', 'ISO_A2'].concat(covidBannedCountries))
-    map.setFilter(CountryTypes.VisaFree, ['in', 'ISO_A2'].concat(visaFreeCountries))
-    map.setFilter(CountryTypes.VisaOnArrival, ['in', 'ISO_A2'].concat(visaOnArrivalCountries))
-    map.setFilter(CountryTypes.VisaRequired, ['in', 'ISO_A2'].concat(visaRequired))
-    map.setFilter(CountryTypes.EVisa, ['in', 'ISO_A2'].concat(eVisa))
+    map.addLayer({
+      id: 'country-status',
+      source: countryDataSource.id,
+      type: 'fill',
+      paint: {
+        'fill-color': [
+          'case',
+          includesIso(covidBannedCountries),
+          '#b73849',
+          includesIso(eVisa),
+          '#64b5f6',
+          includesIso(visaOnArrivalCountries),
+          '#607d8b',
+          includesIso(visaFreeCountries),
+          '#2bd47d',
+          includesIso(visaRequired),
+          '#ffab00',
+          '#90a4ae',
+        ],
+        'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
+        'fill-opacity': 0.75,
+      },
+    })
   }, [countryDetailsList, mapStatus])
 
   React.useEffect(() => {
@@ -80,69 +160,13 @@ const Map: React.FC<{
     })
 
     map.on('sourcedata', () => {
-      setMapStatus(MapStatus.Loaded)
+      if (map.isSourceLoaded(countryDataSource.id)) {
+        setMapStatus(MapStatus.Loaded)
+      }
     })
 
     map.on('load', () => {
-      map.addSource('countries-source', {
-        type: 'geojson',
-        data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-      })
-
-      map.addLayer({
-        id: CountryTypes.CovidBan,
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#b73849',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
-
-      map.addLayer({
-        id: CountryTypes.VisaFree,
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#2bd47d',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
-
-      map.addLayer({
-        id: CountryTypes.VisaOnArrival,
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#607d8b',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
-
-      map.addLayer({
-        id: CountryTypes.VisaRequired,
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#ffab00',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
-
-      map.addLayer({
-        id: CountryTypes.EVisa,
-        source: 'countries-source',
-        type: 'fill',
-        paint: {
-          'fill-color': '#64b5f6',
-          'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-          'fill-opacity': 0.75,
-        },
-      })
+      map.addSource(countryDataSource.id, countryDataSource.source)
     })
   }, [mapRef])
 
@@ -158,7 +182,11 @@ const Map: React.FC<{
 
   return (
     <>
-      {mapStatus !== MapStatus.Loaded && <span className="absolute z-10">{mapStatus}</span>}
+      {mapStatus !== MapStatus.Loaded && (
+        <span className="flex justify-center items-center absolute z-10 w-full h-full bg-gray-200">
+          <LoadingSvg />
+        </span>
+      )}
       <ReactMapGL
         ref={mapRef}
         mapboxApiAccessToken={token}

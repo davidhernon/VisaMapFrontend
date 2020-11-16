@@ -5,9 +5,9 @@ const IsoSelector: React.FC<{ iso: string; onChange: (e: React.ChangeEvent<HTMLS
   iso,
   onChange,
 }) => (
-  <select name="iso" onChange={onChange}>
+  <select name="iso" onChange={onChange} defaultValue={iso}>
     {countryCodeMap.map(({ code, name }) => (
-      <option key={code} value={code} selected={iso === code.toUpperCase()}>
+      <option key={code} value={code}>
         {name}
       </option>
     ))}

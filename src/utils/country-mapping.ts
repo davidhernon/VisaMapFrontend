@@ -21,10 +21,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "AF"
     },
     {
-        "name": "Aland Islands",
-        "code": "AX"
-    },
-    {
         "name": "Albania",
         "code": "AL"
     },
@@ -33,24 +29,12 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "DZ"
     },
     {
-        "name": "American Samoa",
-        "code": "AS"
-    },
-    {
         "name": "Andorra",
         "code": "AD"
     },
     {
         "name": "Angola",
         "code": "AO"
-    },
-    {
-        "name": "Anguilla",
-        "code": "AI"
-    },
-    {
-        "name": "Antarctica",
-        "code": "AQ"
     },
     {
         "name": "Antigua and Barbuda",
@@ -141,14 +125,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "BR"
     },
     {
-        "name": "British Indian Ocean Territory",
-        "code": "IO"
-    },
-    {
-        "name": "Brunei Darussalam",
-        "code": "BN"
-    },
-    {
         "name": "Brunei",
         "code": "BN"
     },
@@ -181,10 +157,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "CV"
     },
     {
-        "name": "Cayman Islands",
-        "code": "KY"
-    },
-    {
         "name": "Central African Republic",
         "code": "CF"
     },
@@ -201,14 +173,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "CN"
     },
     {
-        "name": "Christmas Island",
-        "code": "CX"
-    },
-    {
-        "name": "Cocos (Keeling) Islands",
-        "code": "CC"
-    },
-    {
         "name": "Colombia",
         "code": "CO"
     },
@@ -221,10 +185,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "CG"
     },
     {
-        "name": "Congo, The Democratic Republic of the",
-        "code": "CD"
-    },
-    {
         "name": "Congo (Dem. Rep.)",
         "code": "CD"
     },
@@ -235,10 +195,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Costa Rica",
         "code": "CR"
-    },
-    {
-        "name": "Cote D\"Ivoire",
-        "code": "CI"
     },
     {
         "name": "Cote d'Ivoire (Ivory Coast)",
@@ -309,14 +265,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "ET"
     },
     {
-        "name": "Falkland Islands (Malvinas)",
-        "code": "FK"
-    },
-    {
-        "name": "Faroe Islands",
-        "code": "FO"
-    },
-    {
         "name": "Fiji",
         "code": "FJ"
     },
@@ -327,18 +275,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "France",
         "code": "FR"
-    },
-    {
-        "name": "French Guiana",
-        "code": "GF"
-    },
-    {
-        "name": "French Polynesia",
-        "code": "PF"
-    },
-    {
-        "name": "French Southern Territories",
-        "code": "TF"
     },
     {
         "name": "Gabon",
@@ -359,10 +295,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Ghana",
         "code": "GH"
-    },
-    {
-        "name": "Gibraltar",
-        "code": "GI"
     },
     {
         "name": "Greece",
@@ -409,10 +341,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "HT"
     },
     {
-        "name": "Heard Island and Mcdonald Islands",
-        "code": "HM"
-    },
-    {
         "name": "Vatican City",
         "code": "VA"
     },
@@ -441,10 +369,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "ID"
     },
     {
-        "name": "Iran, Islamic Republic Of",
-        "code": "IR"
-    },
-    {
         "name": "Iran",
         "code": "IR"
     },
@@ -455,10 +379,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Ireland",
         "code": "IE"
-    },
-    {
-        "name": "Isle of Man",
-        "code": "IM"
     },
     {
         "name": "Israel",
@@ -497,20 +417,12 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "KI"
     },
     {
-        "name": "Korea, Democratic People\"S Republic of",
-        "code": "KP"
-    },
-    {
         "name": "North Korea",
         "code": "KP"
     },
     {
         "name": "Kosovo",
         "code": "XK"
-    },
-    {
-        "name": "Korea, Republic of",
-        "code": "KR"
     },
     {
         "name": "South Korea",
@@ -523,10 +435,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Kyrgyzstan",
         "code": "KG"
-    },
-    {
-        "name": "Lao People\"S Democratic Republic",
-        "code": "LA"
     },
     {
         "name": "Laos",
@@ -549,10 +457,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "LR"
     },
     {
-        "name": "Libyan Arab Jamahiriya",
-        "code": "LY"
-    },
-    {
         "name": "Libya",
         "code": "LY"
     },
@@ -571,10 +475,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Macao",
         "code": "MO"
-    },
-    {
-        "name": "Macedonia, The Former Yugoslav Republic of",
-        "code": "MK"
     },
     {
         "name": "North Macedonia",
@@ -629,16 +529,8 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "MX"
     },
     {
-        "name": "Micronesia, Federated States of",
-        "code": "FM"
-    },
-    {
         "name": "Micronesia",
         "code": "FM"
-    },
-    {
-        "name": "Moldova, Republic of",
-        "code": "MD"
     },
     {
         "name": "Moldova",
@@ -653,10 +545,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "MN"
     },
     {
-        "name": "Montserrat",
-        "code": "MS"
-    },
-    {
         "name": "Morocco",
         "code": "MA"
     },
@@ -666,10 +554,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     },
     {
         "name": "Myanmar",
-        "code": "MM"
-    },
-    {
-        "name": "Myanmar [Burma]",
         "code": "MM"
     },
     {
@@ -689,14 +573,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "NL"
     },
     {
-        "name": "Netherlands Antilles",
-        "code": "AN"
-    },
-    {
-        "name": "New Caledonia",
-        "code": "NC"
-    },
-    {
         "name": "New Zealand",
         "code": "NZ"
     },
@@ -713,18 +589,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "NG"
     },
     {
-        "name": "Niue",
-        "code": "NU"
-    },
-    {
-        "name": "Norfolk Island",
-        "code": "NF"
-    },
-    {
-        "name": "Northern Mariana Islands",
-        "code": "MP"
-    },
-    {
         "name": "Norway",
         "code": "NO"
     },
@@ -739,10 +603,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Palau",
         "code": "PW"
-    },
-    {
-        "name": "Palestinian Territory, Occupied",
-        "code": "PS"
     },
     {
         "name": "Palestinian Territories",
@@ -769,10 +629,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "PH"
     },
     {
-        "name": "Pitcairn",
-        "code": "PN"
-    },
-    {
         "name": "Poland",
         "code": "PL"
     },
@@ -787,10 +643,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Qatar",
         "code": "QA"
-    },
-    {
-        "name": "Reunion",
-        "code": "RE"
     },
     {
         "name": "Romania",
@@ -809,16 +661,8 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "SH"
     },
     {
-        "name": "Saint Kitts and Nevis",
-        "code": "KN"
-    },
-    {
         "name": "Saint Lucia",
         "code": "LC"
-    },
-    {
-        "name": "Saint Pierre and Miquelon",
-        "code": "PM"
     },
     {
         "name": "St. Vincent and the Grenadines",
@@ -843,10 +687,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Senegal",
         "code": "SN"
-    },
-    {
-        "name": "Serbia and Montenegro",
-        "code": "CS"
     },
     {
         "name": "Serbia",
@@ -881,16 +721,12 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "SB"
     },
     {
-        "name": "Somalia",
+        "name": "Somaliland",
         "code": "SO"
     },
     {
         "name": "South Africa",
         "code": "ZA"
-    },
-    {
-        "name": "South Georgia and the South Sandwich Islands",
-        "code": "GS"
     },
     {
         "name": "Spain",
@@ -913,24 +749,12 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "SR"
     },
     {
-        "name": "Svalbard and Jan Mayen",
-        "code": "SJ"
-    },
-    {
-        "name": "Swaziland",
-        "code": "SZ"
-    },
-    {
         "name": "Sweden",
         "code": "SE"
     },
     {
         "name": "Switzerland",
         "code": "CH"
-    },
-    {
-        "name": "Syrian Arab Republic",
-        "code": "SY"
     },
     {
         "name": "Syria",
@@ -943,10 +767,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Tajikistan",
         "code": "TJ"
-    },
-    {
-        "name": "Tanzania, United Republic of",
-        "code": "TZ"
     },
     {
         "name": "Tanzania",
@@ -963,10 +783,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Togo",
         "code": "TG"
-    },
-    {
-        "name": "Tokelau",
-        "code": "TK"
     },
     {
         "name": "Tonga",
@@ -987,10 +803,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Turkmenistan",
         "code": "TM"
-    },
-    {
-        "name": "Turks and Caicos Islands",
-        "code": "TC"
     },
     {
         "name": "Tuvalu",
@@ -1017,10 +829,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
         "code": "US"
     },
     {
-        "name": "United States Minor Outlying Islands",
-        "code": "UM"
-    },
-    {
         "name": "Uruguay",
         "code": "UY"
     },
@@ -1039,22 +847,6 @@ export const countryCodeMap: {name:string, code:string}[] = [
     {
         "name": "Viet Nam",
         "code": "VN"
-    },
-    {
-        "name": "Virgin Islands, British",
-        "code": "VG"
-    },
-    {
-        "name": "Virgin Islands, U.S.",
-        "code": "VI"
-    },
-    {
-        "name": "Wallis and Futuna",
-        "code": "WF"
-    },
-    {
-        "name": "Western Sahara",
-        "code": "EH"
     },
     {
         "name": "Yemen",
