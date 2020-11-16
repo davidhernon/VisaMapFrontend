@@ -16,7 +16,8 @@ module.exports = {
         'auto-1/2': '1 50%'
       },
       width: {
-        '35': '35%'
+        '35': '35%',
+        'full-pad': 'calc(100% - 0.5rem);'
       },
     },
   },

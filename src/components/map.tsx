@@ -157,7 +157,7 @@ const Map: React.FC<{
           colors.required,
           colors['no-data'],
         ],
-        'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
+        'fill-outline-color': '#F2F2F2',
         'fill-opacity': 0.75,
       },
     });

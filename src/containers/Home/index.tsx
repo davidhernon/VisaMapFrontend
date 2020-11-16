@@ -25,7 +25,7 @@ const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
 
   return (
     <>
-      <div className="absolute m-2 z-20 bg-white p-2 w-35">
+      <div className="m-2 z-20 bg-white p-2 w-full-pad pr-4 md:absolute md:w-35">
         <h1 data-testid="helloH1" className="text-xl text-gray-900">
           Visa Restrictions for {getCountryNameFromCode(iso)}
         </h1>

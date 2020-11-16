@@ -8,8 +8,8 @@
 - Built a simple map component:
 
 ```ts
-import React from 'react'
-import ReactMapGL from 'react-map-gl'
+import React from 'react';
+import ReactMapGL from 'react-map-gl';
 
 const Map: React.FC<{ token: string }> = ({ token }) => {
   const [state, setState] = React.useState({
@@ -20,7 +20,7 @@ const Map: React.FC<{ token: string }> = ({ token }) => {
       longitude: -122.4376,
       zoom: 8,
     },
-  })
+  });
 
   return (
     <ReactMapGL
@@ -28,12 +28,11 @@ const Map: React.FC<{ token: string }> = ({ token }) => {
       {...state.viewport}
       onViewportChange={(viewport) => setState({ viewport })}
     />
-  )
-}
+  );
+};
 
-export default Map
+export default Map;
 ```
-
 
 ## Resize the viewport on window resize
 
@@ -46,15 +45,15 @@ Usually, we might use useEffectLayout to accomplish this, and recalculate the `w
 To avoid this, well attach a resize listener when the component loads that will fire a function to handle calculating our resize on the fly.
 
 ```ts
-  React.useEffect(() => {
-    setViewport({ ...viewport, width: innerWidth, height: innerHeight })
-    window.addEventListener('resize', () => {
-      setViewport({
-        ...viewport,
-        ...getWindowSize(),
-      })
-    })
-  }, [])
+React.useEffect(() => {
+  setViewport({ ...viewport, width: innerWidth, height: innerHeight });
+  window.addEventListener('resize', () => {
+    setViewport({
+      ...viewport,
+      ...getWindowSize(),
+    });
+  });
+}, []);
 ```
 
 ## Add our geojson
@@ -68,8 +67,9 @@ I added a dynamic import for now, definitely needs a change later as this feels 
 ```ts
 map.addSource('countries-source', {
   type: 'geojson',
-  data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-})
+  data:
+    'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+});
 
 map.addLayer({
   id: 'countries-covid-ban',
@@ -77,13 +77,12 @@ map.addLayer({
   type: 'fill',
   paint: {
     'fill-color': '#b73849',
-    'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
+    'fill-outline-color': '#F2F2F2',
     'fill-opacity': 0.75,
   },
-})
+});
 
-map.setFilter('countries-covid-ban', ['in', 'ISO_A2'].concat(['US'])) // This line lets us filter by country codes.
-
+map.setFilter('countries-covid-ban', ['in', 'ISO_A2'].concat(['US'])); // This line lets us filter by country codes.
 ```
 
 ## Status Feedback
@@ -123,6 +122,7 @@ map.on('sourcedata', () => {
 ```
 
 Since we re-render the map when countryDetailsList is updated I put the filter in a useEffect
+
 ```ts
   React.useEffect(() => {
     const map = mapRef.current?.getMap()
@@ -138,6 +138,6 @@ Since we re-render the map when countryDetailsList is updated I put the filter i
   }, [countryDetailsList])
 
   {IMAGE OF US BANNED COUNTRIES}
-  ```
+```
 
 Now Im going to add a new layer and a new filter for coloring the other countries
