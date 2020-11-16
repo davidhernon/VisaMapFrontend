@@ -3,7 +3,22 @@ module.exports = {
     content: ['./pages/**/*.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
   },
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'no-data': '#90a4ae',
+        'required': '#ffab00', 
+        'on-arrival': '#1381b5',
+        'e-visa': '#64b5f6',
+        'visa-free': '#2bd47d',
+        'covid-ban': '#b73849'
+      },
+      flex: {
+        'auto-1/2': '1 50%'
+      },
+      width: {
+        '35': '35%'
+      },
+    },
   },
   variants: {},
   plugins: [],

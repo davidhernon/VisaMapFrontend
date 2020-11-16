@@ -1,8 +1,8 @@
-import React from 'react'
-import ReactMapGL from 'react-map-gl'
-import { CountryDetails } from 'types/map-types'
-import { getWindowSize } from '@src/components/helpers/map-helpers'
-import mapboxgl from 'mapbox-gl'
+import React from 'react';
+import ReactMapGL from 'react-map-gl';
+import { CountryDetails } from 'types/map-types';
+import { getWindowSize } from '@src/components/helpers/map-helpers';
+import mapboxgl from 'mapbox-gl';
 
 enum MapStatus {
   Init = 'Init',
@@ -11,25 +11,31 @@ enum MapStatus {
 }
 
 const countryDataSource: {
-  id: string
-  source: mapboxgl.AnySourceData
+  id: string;
+  source: mapboxgl.AnySourceData;
 } = {
   id: 'countries-source',
   source: {
     type: 'geojson',
-    data: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+    data:
+      'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
   },
-}
+};
 
 const LoadingSvg = () => (
-  <svg width="54px" height="54px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+  <svg
+    width="54px"
+    height="54px"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid"
+  >
     <circle
       cx="50"
       cy="50"
       r="32"
-      stroke-width="8"
+      strokeWidth="8"
       stroke="#64b5f6"
-      stroke-dasharray="50.26548245743669 50.26548245743669"
+      strokeDasharray="50.26548245743669 50.26548245743669"
       fill="none"
       stroke-linecap="round"
     >
@@ -46,10 +52,10 @@ const LoadingSvg = () => (
       cx="50"
       cy="50"
       r="23"
-      stroke-width="8"
+      strokeWidth="8"
       stroke="#2bd47d"
-      stroke-dasharray="36.12831551628262 36.12831551628262"
-      stroke-dashoffset="36.12831551628262"
+      strokeDasharray="36.12831551628262 36.12831551628262"
+      strokeDashoffset="36.12831551628262"
       fill="none"
       stroke-linecap="round"
     >
@@ -63,66 +69,73 @@ const LoadingSvg = () => (
       ></animateTransform>
     </circle>
   </svg>
-)
+);
 
 /**
  * Mapbox Expression Helper
  * Returns expression that evaluates to true or false if the selected field is in a given array
  */
-const includesField = (field: string) => (array: (string | number)[]) => ['in', ['get', field], ['literal', array]]
+const includesField = (field: string) => (array: (string | number)[]) => [
+  'in',
+  ['get', field],
+  ['literal', array],
+];
 
-const includesIso = includesField('ISO_A2')
+const includesIso = includesField('ISO_A2');
 
 const Map: React.FC<{
-  token: string
-  countryDetailsList: CountryDetails[]
+  token: string;
+  countryDetailsList: CountryDetails[];
 }> = ({ countryDetailsList, token }) => {
-  const mapRef = React.useRef<null | ReactMapGL>(null)
-  const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init)
+  const mapRef = React.useRef<null | ReactMapGL>(null);
+  const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init);
   const [viewport, setViewport] = React.useState({
     width: 0,
     height: 0,
     latitude: 0,
     longitude: 0,
     zoom: 1,
-  })
+  });
 
   React.useEffect(() => {
-    const map = mapRef.current?.getMap()
+    const map = mapRef.current?.getMap();
     if (
       !map ||
       mapStatus === MapStatus.Loading ||
       mapStatus === MapStatus.Init ||
       !map.getSource(countryDataSource.id) ||
-      (map.getSource(countryDataSource.id) && !map.isSourceLoaded(countryDataSource.id))
+      (map.getSource(countryDataSource.id) &&
+        !map.isSourceLoaded(countryDataSource.id))
     ) {
-      return
+      return;
     }
 
-    const layer = map.getLayer('country-status')
+    const layer = map.getLayer('country-status');
     if (layer) {
-      map.removeLayer('country-status')
+      map.removeLayer('country-status');
     }
 
     const covidBannedCountries = countryDetailsList
       .filter(({ details: { covidBan } }) => covidBan)
-      .map((countryDetail) => countryDetail.code)
+      .map((countryDetail) => countryDetail.code);
 
     const visaFreeCountries = countryDetailsList
       .filter(({ details }) => !details.visaRequired)
       .map((countryDetail) => countryDetail.code)
-      .filter((code) => !covidBannedCountries.includes(code))
+      .filter((code) => !covidBannedCountries.includes(code));
 
-    const eVisa = countryDetailsList.filter(({ details: { eVisa } }) => eVisa).map(({ code }) => code)
+    const eVisa = countryDetailsList
+      .filter(({ details: { eVisa } }) => eVisa)
+      .map(({ code }) => code);
 
     const visaOnArrivalCountries = countryDetailsList
       .filter(({ details: { visaOnArrival } }) => visaOnArrival)
-      .map((countryDetail) => countryDetail.code)
+      .map((countryDetail) => countryDetail.code);
 
     const visaRequired = countryDetailsList
       .filter(({ details: { visaRequired } }) => visaRequired)
       .map(({ code }) => code)
-      .filter((code) => !visaOnArrivalCountries.includes(code))
+      .filter((code) => !visaOnArrivalCountries.includes(code));
 
     map.addLayer({
       id: 'country-status',
@@ -136,7 +149,7 @@ const Map: React.FC<{
           includesIso(eVisa),
           '#64b5f6',
           includesIso(visaOnArrivalCountries),
-          '#607d8b',
+          '#1381b5',
           includesIso(visaFreeCountries),
           '#2bd47d',
           includesIso(visaRequired),
@@ -146,39 +159,43 @@ const Map: React.FC<{
         'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
         'fill-opacity': 0.75,
       },
-    })
-  }, [countryDetailsList, mapStatus])
+    });
+  }, [countryDetailsList, mapStatus]);
 
   React.useEffect(() => {
-    const map = mapRef.current?.getMap()
+    const map = mapRef.current?.getMap();
     if (!map) {
-      return
+      return;
     }
 
     map.on('sourcedataloading', () => {
-      setMapStatus(MapStatus.Loading)
-    })
+      if (MapStatus.Loaded) {
+        // if we already loaded the map once don't hide the UI again
+        return;
+      }
+      setMapStatus(MapStatus.Loading);
+    });
 
     map.on('sourcedata', () => {
       if (map.isSourceLoaded(countryDataSource.id)) {
-        setMapStatus(MapStatus.Loaded)
+        setMapStatus(MapStatus.Loaded);
       }
-    })
+    });
 
     map.on('load', () => {
-      map.addSource(countryDataSource.id, countryDataSource.source)
-    })
-  }, [mapRef])
+      map.addSource(countryDataSource.id, countryDataSource.source);
+    });
+  }, [mapRef]);
 
   React.useEffect(() => {
-    setViewport({ ...viewport, ...getWindowSize() })
+    setViewport({ ...viewport, ...getWindowSize() });
     window.addEventListener('resize', () => {
       setViewport({
         ...viewport,
         ...getWindowSize(),
-      })
-    })
-  }, [])
+      });
+    });
+  }, []);
 
   return (
     <>
@@ -194,7 +211,7 @@ const Map: React.FC<{
         onViewportChange={(viewport) => setViewport(viewport)}
       />
     </>
-  )
-}
+  );
+};
 
-export default Map
+export default Map;
