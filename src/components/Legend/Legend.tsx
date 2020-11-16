@@ -1,29 +1,30 @@
+import { colors } from '@src/utils/theme';
 import LegendItem from './LegendItem';
 
 const LegendItems = [
   {
     description: 'Covid-19 Entry Ban',
-    color: '#b73849',
+    color: colors['covid-ban'],
   },
   {
     description: 'Visa Free',
-    color: '#2bd47d',
+    color: colors['visa-free'],
   },
   {
     description: 'E-Visa',
-    color: '#64b5f6',
+    color: colors['e-visa'],
   },
   {
     description: 'Visa On Arrival',
-    color: '#1381b5',
+    color: colors['on-arrival'],
   },
   {
     description: 'Visa Required',
-    color: '#ffab00',
+    color: colors.required,
   },
   {
     description: 'No Data',
-    color: '#90a4ae',
+    color: colors['no-data'],
   },
 ];
 

@@ -3,6 +3,7 @@ import ReactMapGL from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
 import { getWindowSize } from '@src/components/helpers/map-helpers';
 import mapboxgl from 'mapbox-gl';
+import { colors } from '@src/utils/theme';
 
 enum MapStatus {
   Init = 'Init',
@@ -37,7 +38,7 @@ const LoadingSvg = () => (
       stroke="#64b5f6"
       strokeDasharray="50.26548245743669 50.26548245743669"
       fill="none"
-      stroke-linecap="round"
+      strokeLinecap="round"
     >
       <animateTransform
         attributeName="transform"
@@ -57,7 +58,7 @@ const LoadingSvg = () => (
       strokeDasharray="36.12831551628262 36.12831551628262"
       strokeDashoffset="36.12831551628262"
       fill="none"
-      stroke-linecap="round"
+      strokeLinecap="round"
     >
       <animateTransform
         attributeName="transform"
@@ -145,16 +146,16 @@ const Map: React.FC<{
         'fill-color': [
           'case',
           includesIso(covidBannedCountries),
-          '#b73849',
+          colors['covid-ban'],
           includesIso(eVisa),
-          '#64b5f6',
+          colors['e-visa'],
           includesIso(visaOnArrivalCountries),
-          '#1381b5',
+          colors['on-arrival'],
           includesIso(visaFreeCountries),
-          '#2bd47d',
+          colors['visa-free'],
           includesIso(visaRequired),
-          '#ffab00',
-          '#90a4ae',
+          colors.required,
+          colors['no-data'],
         ],
         'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
         'fill-opacity': 0.75,
