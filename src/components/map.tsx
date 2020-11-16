@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactMapGL from 'react-map-gl';
+import ReactMapGL, { PointerEvent, Popup } from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
 import { getWindowSize } from '@src/components/helpers/map-helpers';
 import mapboxgl from 'mapbox-gl';
@@ -89,6 +89,13 @@ const Map: React.FC<{
   countryDetailsList: CountryDetails[];
 }> = ({ countryDetailsList, token }) => {
   const mapRef = React.useRef<null | ReactMapGL>(null);
+  const [popupVisible, setPopupVisible] = React.useState<boolean>(false);
+  const [popupDetails, setPopupDetails] = React.useState<{
+    lngLat: [number, number];
+  }>({ lngLat: [0, 0] });
+  const [hoveredFeatureId, setHoveredFeatureId] = React.useState<
+    undefined | number | string
+  >(undefined);
   const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init);
   const [viewport, setViewport] = React.useState({
     width: 0,
@@ -137,7 +144,6 @@ const Map: React.FC<{
       .filter(({ details: { visaRequired } }) => visaRequired)
       .map(({ code }) => code)
       .filter((code) => !visaOnArrivalCountries.includes(code));
-
     map.addLayer({
       id: 'country-status',
       source: countryDataSource.id,
@@ -158,7 +164,12 @@ const Map: React.FC<{
           colors['no-data'],
         ],
         'fill-outline-color': '#F2F2F2',
-        'fill-opacity': 0.75,
+        'fill-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          1,
+          0.75,
+        ],
       },
     });
   }, [countryDetailsList, mapStatus]);
@@ -185,7 +196,7 @@ const Map: React.FC<{
         setMapStatus(MapStatus.Loaded);
       }
     });
-
+    let hoveredStateId: undefined | number | string = undefined;
     map.on('load', () => {
       map.addSource(countryDataSource.id, countryDataSource.source);
     });
@@ -213,7 +224,58 @@ const Map: React.FC<{
         mapboxApiAccessToken={token}
         {...viewport}
         onViewportChange={(viewport) => setViewport(viewport)}
-      />
+        doubleClickZoom={false}
+        onClick={(event: PointerEvent) => {
+          if (!popupVisible) {
+            setPopupDetails({ lngLat: event.lngLat });
+            setPopupVisible(true);
+            return;
+          }
+          setPopupVisible(false);
+          return;
+        }}
+        onHover={(e) => {
+          const countryFeature = e.features.find(
+            (feature) => feature.layer.id === 'country-status',
+          );
+          if (!hoveredFeatureId && countryFeature) {
+            console.log({ e, countryFeatureId: countryFeature.id });
+            mapRef!.current!.getMap().setFeatureState(
+              {
+                source: countryDataSource.id,
+                id: countryFeature.id,
+              },
+              { hover: true },
+            );
+            setHoveredFeatureId(countryFeature.id);
+          }
+          if (hoveredFeatureId && !countryFeature) {
+            mapRef!.current!.getMap().setFeatureState(
+              {
+                id: hoveredFeatureId,
+                source: countryDataSource.id,
+              },
+              {
+                hover: false,
+              },
+            );
+            setHoveredFeatureId(undefined);
+          }
+        }}
+      >
+        {popupVisible && (
+          <Popup
+            latitude={popupDetails.lngLat[1]}
+            longitude={popupDetails.lngLat[0]}
+            closeButton={true}
+            closeOnClick={false}
+            onClose={() => setPopupVisible(false)}
+            anchor="top"
+          >
+            Popup
+          </Popup>
+        )}
+      </ReactMapGL>
     </>
   );
 };
