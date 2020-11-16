@@ -3,7 +3,7 @@ import LegendItem from './LegendItem';
 
 const LegendItems = [
   {
-    description: 'Covid-19 Entry Ban',
+    description: 'Covid-19 Ban',
     color: colors['covid-ban'],
   },
   {
