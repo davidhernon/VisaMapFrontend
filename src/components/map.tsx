@@ -178,7 +178,10 @@ const Map: React.FC<{
     });
 
     map.on('sourcedata', () => {
-      if (map.isSourceLoaded(countryDataSource.id)) {
+      if (
+        map.getSource(countryDataSource.id) &&
+        map.isSourceLoaded(countryDataSource.id)
+      ) {
         setMapStatus(MapStatus.Loaded);
       }
     });
