@@ -94,8 +94,8 @@ const Map: React.FC<{
     lngLat: [number, number];
   }>({ lngLat: [0, 0] });
   const [hoveredFeatureId, setHoveredFeatureId] = React.useState<
-    undefined | number | string
-  >(undefined);
+    null | number | string
+  >(null);
   const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init);
   const [viewport, setViewport] = React.useState({
     width: 0,
@@ -166,13 +166,13 @@ const Map: React.FC<{
         'fill-outline-color': '#F2F2F2',
         'fill-opacity': [
           'case',
-          ['boolean', ['feature-state', 'hover'], false],
+          ['==', ['get', 'ISO_A2'], hoveredFeatureId],
           1,
           0.75,
         ],
       },
     });
-  }, [countryDetailsList, mapStatus]);
+  }, [countryDetailsList, mapStatus, hoveredFeatureId]);
 
   React.useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -238,28 +238,16 @@ const Map: React.FC<{
           const countryFeature = e.features.find(
             (feature) => feature.layer.id === 'country-status',
           );
-          if (!hoveredFeatureId && countryFeature) {
-            console.log({ e, countryFeatureId: countryFeature.id });
-            mapRef!.current!.getMap().setFeatureState(
-              {
-                source: countryDataSource.id,
-                id: countryFeature.id,
-              },
-              { hover: true },
-            );
-            setHoveredFeatureId(countryFeature.id);
+          if (
+            (!hoveredFeatureId && countryFeature) ||
+            (countryFeature &&
+              countryFeature.properties.ISO_A2 !== hoveredFeatureId)
+          ) {
+            setHoveredFeatureId(countryFeature.properties.ISO_A2);
+            return;
           }
           if (hoveredFeatureId && !countryFeature) {
-            mapRef!.current!.getMap().setFeatureState(
-              {
-                id: hoveredFeatureId,
-                source: countryDataSource.id,
-              },
-              {
-                hover: false,
-              },
-            );
-            setHoveredFeatureId(undefined);
+            setHoveredFeatureId(null);
           }
         }}
       >
