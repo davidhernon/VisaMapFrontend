@@ -3,15 +3,13 @@ import Map from '@src/components/map'
 import { CountryDetails } from 'types/map-types'
 import { convertCountryDetailModuleToList } from '@src/utils/json-data-utils'
 import { useRouter } from 'next/dist/client/router'
-import { countryCodeMap, getCountryNameFromCode } from '@src/utils/country-mapping'
+import { getCountryNameFromCode } from '@src/utils/country-mapping'
 import IsoSelector from '@src/components/IsoSelector'
 
 const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
-  const { SITE_NAME } = process.env
   const { MAPBOX_TOKEN } = process.env // https://github.com/vercel/next.js/issues/6888
   const router = useRouter()
   const path = router.pathname
-
   const [countryDetailsList, setCountryDetailsList] = React.useState<CountryDetails[]>([])
   React.useEffect(() => {
     import(`../../../public/json/${iso}.json`).then((countryDetailModule) => {
