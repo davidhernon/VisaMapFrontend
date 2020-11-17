@@ -3,8 +3,6 @@ import ReactMapGL, { PointerEvent, Popup } from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
 import { getWindowSize } from '@src/components/helpers/map-helpers';
 import { colors } from '@src/utils/theme';
-import { getCountryNameFromCode } from '@src/utils/country-mapping';
-import LegendItem from '@src/components/Legend/LegendItem';
 import LoadingSvg from '@src/components/LoadingIcon';
 import {
   countryDataSource,
@@ -12,6 +10,7 @@ import {
   setHoveredCountry,
   includesIso,
   getCountryStatusSets,
+  getCountryFeatureFromPointerEvent,
 } from '@src/components/Map/map-helpers';
 import CountryPopup from '@src/components/Map/CountryPopup';
 
@@ -21,6 +20,7 @@ const Map: React.FC<{
   countryDetailsList: CountryDetails[];
 }> = ({ countryDetailsList, iso, token }) => {
   const mapRef = React.useRef<null | ReactMapGL>(null);
+  const [map, setMap] = React.useState<null | mapboxgl.Map>(null);
   const [popupVisible, setPopupVisible] = React.useState<boolean>(false);
   const [popupDetails, setPopupDetails] = React.useState<{
     lngLat: [number, number];
@@ -55,7 +55,6 @@ const Map: React.FC<{
   } = getCountryStatusSets(countryDetailsList);
 
   React.useEffect(() => {
-    const map = mapRef.current?.getMap();
     if (
       !map ||
       mapStatus === MapStatus.Loading ||
@@ -111,11 +110,16 @@ const Map: React.FC<{
     hoveredFeatureId,
   ]);
 
+  /**
+   * When the mapRef binds we need to bind some callbacks
+   * Well add a callback to load our source data as well callbacks to handle the state of the map based on when things are done loading
+   */
   React.useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map) {
       return;
     }
+    setMap(map);
 
     map.on('sourcedataloading', () => {
       if (MapStatus.Loaded) {
@@ -133,7 +137,7 @@ const Map: React.FC<{
         setMapStatus(MapStatus.Loaded);
       }
     });
-    let hoveredStateId: undefined | number | string = undefined;
+
     map.on('load', () => {
       map.addSource(countryDataSource.id, countryDataSource.source);
     });
@@ -162,6 +166,7 @@ const Map: React.FC<{
     setHoveredCountryDetail(countryDetails);
   }, [hoveredFeatureId]);
 
+  // on initial page load set viewport and bind 'resize' listener
   React.useEffect(() => {
     setViewport({ ...viewport, ...getWindowSize() });
     window.addEventListener('resize', () => {
@@ -193,11 +198,7 @@ const Map: React.FC<{
         doubleClickZoom={false}
         onClick={(e: PointerEvent) => {
           if (!popupVisible) {
-            const countryFeature =
-              e.features &&
-              e.features.find(
-                (feature) => feature.layer.id === 'country-status',
-              );
+            const countryFeature = getCountryFeatureFromPointerEvent(e);
             if (countryFeature) {
               setHoveredFeatureId(countryFeature.properties.ISO_A2);
               setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
