@@ -298,8 +298,6 @@ const Map: React.FC<{
           const countryFeature =
             e.features &&
             e.features.find((feature) => feature.layer.id === 'country-status');
-          console.log({ features: e!.features });
-
           if (
             (!hoveredFeatureId && countryFeature) ||
             (countryFeature &&
