@@ -6,78 +6,9 @@ import mapboxgl from 'mapbox-gl';
 import { colors } from '@src/utils/theme';
 import { getCountryNameFromCode } from '@src/utils/country-mapping';
 import LegendItem from '@src/components/Legend/LegendItem';
+import LoadingSvg from '@src/components/LoadingIcon';
 import debounce from 'lodash.debounce';
-
-enum MapStatus {
-  Init = 'Init',
-  Loading = 'Loading',
-  Loaded = 'Loaded',
-}
-
-const countryDataSource: {
-  id: string;
-  source: mapboxgl.AnySourceData;
-} = {
-  id: 'countries-source',
-  source: {
-    type: 'geojson',
-    data:
-      'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-  },
-};
-
-const LoadingSvg = () => (
-  <svg
-    width="54px"
-    height="54px"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid"
-  >
-    <circle
-      cx="50"
-      cy="50"
-      r="32"
-      strokeWidth="8"
-      stroke="#64b5f6"
-      strokeDasharray="50.26548245743669 50.26548245743669"
-      fill="none"
-      strokeLinecap="round"
-    >
-      <animateTransform
-        attributeName="transform"
-        type="rotate"
-        dur="1.6949152542372878s"
-        repeatCount="indefinite"
-        keyTimes="0;1"
-        values="0 50 50;360 50 50"
-      ></animateTransform>
-    </circle>
-    <circle
-      cx="50"
-      cy="50"
-      r="23"
-      strokeWidth="8"
-      stroke="#2bd47d"
-      strokeDasharray="36.12831551628262 36.12831551628262"
-      strokeDashoffset="36.12831551628262"
-      fill="none"
-      strokeLinecap="round"
-    >
-      <animateTransform
-        attributeName="transform"
-        type="rotate"
-        dur="1.6949152542372878s"
-        repeatCount="indefinite"
-        keyTimes="0;1"
-        values="0 50 50;-360 50 50"
-      ></animateTransform>
-    </circle>
-  </svg>
-);
-
-// _.debounce((counter) => {
-//   this.setState({counter: counter});
-// }, 100, {leading: true, maxWait: 2000})
+import { countryDataSource, MapStatus } from '@src/components/Map/map-helpers';
 
 const setHoveredCountry = debounce(
   ({

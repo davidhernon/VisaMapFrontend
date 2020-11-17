@@ -3,5 +3,5 @@
   "noSemi": false,
   "semi": true,
   "trailingComma": "all",
-  "printWidth": 80,
+  "printWidth": 80
 }
