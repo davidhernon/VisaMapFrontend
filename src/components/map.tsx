@@ -6,6 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import { colors } from '@src/utils/theme';
 import { getCountryNameFromCode } from '@src/utils/country-mapping';
 import LegendItem from '@src/components/Legend/LegendItem';
+import debounce from 'lodash.debounce';
 
 enum MapStatus {
   Init = 'Init',
@@ -72,6 +73,55 @@ const LoadingSvg = () => (
       ></animateTransform>
     </circle>
   </svg>
+);
+
+// _.debounce((counter) => {
+//   this.setState({counter: counter});
+// }, 100, {leading: true, maxWait: 2000})
+
+const setHoveredCountry = debounce(
+  ({
+    e,
+    hoveredFeatureId,
+    popupVisible,
+    setHoveredFeatureId,
+    setBackgroundHoveredFeatureId,
+  }: {
+    e: PointerEvent;
+    hoveredFeatureId: null | string | number;
+    popupVisible: boolean;
+    setHoveredFeatureId: (iso: string | null) => void;
+    setBackgroundHoveredFeatureId: (iso: string | null) => void;
+  }) => {
+    console.log('set hver');
+    if (!e.features) {
+      return;
+    }
+    const countryFeature = e.features.find(
+      (feature) => feature.layer.id === 'country-status',
+    );
+
+    if (
+      (!hoveredFeatureId && countryFeature) ||
+      (countryFeature && countryFeature.properties.ISO_A2 !== hoveredFeatureId)
+    ) {
+      if (!popupVisible) {
+        setHoveredFeatureId(countryFeature.properties.ISO_A2);
+      }
+      setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
+      return;
+    }
+    if (hoveredFeatureId && !countryFeature) {
+      if (!popupVisible) {
+        setHoveredFeatureId(null);
+      }
+      setBackgroundHoveredFeatureId(null);
+    }
+  },
+  100,
+  {
+    maxWait: 100,
+  },
 );
 
 /**
@@ -295,26 +345,13 @@ const Map: React.FC<{
           return;
         }}
         onHover={(e) => {
-          const countryFeature =
-            e.features &&
-            e.features.find((feature) => feature.layer.id === 'country-status');
-          if (
-            (!hoveredFeatureId && countryFeature) ||
-            (countryFeature &&
-              countryFeature.properties.ISO_A2 !== hoveredFeatureId)
-          ) {
-            if (!popupVisible) {
-              setHoveredFeatureId(countryFeature.properties.ISO_A2);
-            }
-            setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
-            return;
-          }
-          if (hoveredFeatureId && !countryFeature) {
-            if (!popupVisible) {
-              setHoveredFeatureId(null);
-            }
-            setBackgroundHoveredFeatureId(null);
-          }
+          setHoveredCountry({
+            e,
+            hoveredFeatureId,
+            popupVisible,
+            setHoveredFeatureId,
+            setBackgroundHoveredFeatureId,
+          });
         }}
       >
         {popupVisible && (
