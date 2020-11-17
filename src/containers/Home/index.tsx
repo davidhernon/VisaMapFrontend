@@ -38,7 +38,11 @@ const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
         <Legend />
       </div>
       {MAPBOX_TOKEN && (
-        <Map countryDetailsList={countryDetailsList} token={MAPBOX_TOKEN}></Map>
+        <Map
+          countryDetailsList={countryDetailsList}
+          iso={iso}
+          token={MAPBOX_TOKEN}
+        ></Map>
       )}
     </>
   );
