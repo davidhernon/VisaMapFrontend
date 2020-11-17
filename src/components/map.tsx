@@ -249,10 +249,19 @@ const Map: React.FC<{
         {...viewport}
         onViewportChange={(viewport) => setViewport(viewport)}
         doubleClickZoom={false}
-        onClick={(event: PointerEvent) => {
+        onClick={(e: PointerEvent) => {
           if (!popupVisible) {
-            setPopupDetails({ lngLat: event.lngLat });
-            setPopupVisible(true);
+            const countryFeature =
+              e.features &&
+              e.features.find(
+                (feature) => feature.layer.id === 'country-status',
+              );
+            if (countryFeature) {
+              setHoveredFeatureId(countryFeature.properties.ISO_A2);
+              setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
+              setPopupDetails({ lngLat: e.lngLat });
+              setPopupVisible(true);
+            }
             return;
           }
           setPopupVisible(false);
