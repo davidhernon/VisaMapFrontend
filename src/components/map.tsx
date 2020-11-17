@@ -96,6 +96,10 @@ const Map: React.FC<{
   const [hoveredFeatureId, setHoveredFeatureId] = React.useState<
     null | number | string
   >(null);
+  const [
+    backgroundHoveredFeatureId,
+    setBackgroundHoveredFeatureId,
+  ] = React.useState<null | number | string>(null);
   const [mapStatus, setMapStatus] = React.useState<MapStatus>(MapStatus.Init);
   const [viewport, setViewport] = React.useState({
     width: 0,
@@ -105,15 +109,35 @@ const Map: React.FC<{
     zoom: 1,
   });
 
+  const covidBannedCountries = countryDetailsList
+    .filter(({ details: { covidBan } }) => covidBan)
+    .map((countryDetail) => countryDetail.code);
+
+  const visaFreeCountries = countryDetailsList
+    .filter(({ details }) => !details.visaRequired)
+    .map((countryDetail) => countryDetail.code)
+    .filter((code) => !covidBannedCountries.includes(code));
+
+  const eVisa = countryDetailsList
+    .filter(({ details: { eVisa } }) => eVisa)
+    .map(({ code }) => code);
+
+  const visaOnArrivalCountries = countryDetailsList
+    .filter(({ details: { visaOnArrival } }) => visaOnArrival)
+    .map((countryDetail) => countryDetail.code);
+
+  const visaRequired = countryDetailsList
+    .filter(({ details: { visaRequired } }) => visaRequired)
+    .map(({ code }) => code)
+    .filter((code) => !visaOnArrivalCountries.includes(code));
+
   React.useEffect(() => {
     const map = mapRef.current?.getMap();
     if (
       !map ||
       mapStatus === MapStatus.Loading ||
       mapStatus === MapStatus.Init ||
-      !map.getSource(countryDataSource.id) ||
-      (map.getSource(countryDataSource.id) &&
-        !map.isSourceLoaded(countryDataSource.id))
+      !map.getSource(countryDataSource.id)
     ) {
       return;
     }
@@ -123,27 +147,6 @@ const Map: React.FC<{
       map.removeLayer('country-status');
     }
 
-    const covidBannedCountries = countryDetailsList
-      .filter(({ details: { covidBan } }) => covidBan)
-      .map((countryDetail) => countryDetail.code);
-
-    const visaFreeCountries = countryDetailsList
-      .filter(({ details }) => !details.visaRequired)
-      .map((countryDetail) => countryDetail.code)
-      .filter((code) => !covidBannedCountries.includes(code));
-
-    const eVisa = countryDetailsList
-      .filter(({ details: { eVisa } }) => eVisa)
-      .map(({ code }) => code);
-
-    const visaOnArrivalCountries = countryDetailsList
-      .filter(({ details: { visaOnArrival } }) => visaOnArrival)
-      .map((countryDetail) => countryDetail.code);
-
-    const visaRequired = countryDetailsList
-      .filter(({ details: { visaRequired } }) => visaRequired)
-      .map(({ code }) => code)
-      .filter((code) => !visaOnArrivalCountries.includes(code));
     map.addLayer({
       id: 'country-status',
       source: countryDataSource.id,
@@ -172,7 +175,15 @@ const Map: React.FC<{
         ],
       },
     });
-  }, [countryDetailsList, mapStatus, hoveredFeatureId]);
+  }, [
+    covidBannedCountries,
+    visaRequired,
+    eVisa,
+    visaOnArrivalCountries,
+    visaFreeCountries,
+    mapStatus,
+    hoveredFeatureId,
+  ]);
 
   React.useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -203,6 +214,13 @@ const Map: React.FC<{
   }, [mapRef]);
 
   React.useEffect(() => {
+    console.log({ popupVisible, backgroundHoveredFeatureId });
+    if (!popupVisible) {
+      setHoveredFeatureId(backgroundHoveredFeatureId);
+    }
+  }, [popupVisible]);
+
+  React.useEffect(() => {
     setViewport({ ...viewport, ...getWindowSize() });
     window.addEventListener('resize', () => {
       setViewport({
@@ -213,7 +231,7 @@ const Map: React.FC<{
   }, []);
 
   return (
-    <>
+    <div style={{ cursor: 'pointer !important' }}>
       {mapStatus !== MapStatus.Loaded && (
         <span className="flex justify-center items-center absolute z-10 w-full h-full bg-gray-200">
           <LoadingSvg />
@@ -221,6 +239,12 @@ const Map: React.FC<{
       )}
       <ReactMapGL
         ref={mapRef}
+        getCursor={(e) => {
+          if (hoveredFeatureId && !popupVisible) {
+            return 'pointer';
+          }
+          return 'grab';
+        }}
         mapboxApiAccessToken={token}
         {...viewport}
         onViewportChange={(viewport) => setViewport(viewport)}
@@ -235,19 +259,25 @@ const Map: React.FC<{
           return;
         }}
         onHover={(e) => {
-          const countryFeature = e.features.find(
-            (feature) => feature.layer.id === 'country-status',
-          );
+          const countryFeature =
+            e.features &&
+            e.features.find((feature) => feature.layer.id === 'country-status');
           if (
             (!hoveredFeatureId && countryFeature) ||
             (countryFeature &&
               countryFeature.properties.ISO_A2 !== hoveredFeatureId)
           ) {
-            setHoveredFeatureId(countryFeature.properties.ISO_A2);
+            if (!popupVisible) {
+              setHoveredFeatureId(countryFeature.properties.ISO_A2);
+            }
+            setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
             return;
           }
           if (hoveredFeatureId && !countryFeature) {
-            setHoveredFeatureId(null);
+            if (!popupVisible) {
+              setHoveredFeatureId(null);
+            }
+            setBackgroundHoveredFeatureId(null);
           }
         }}
       >
@@ -264,7 +294,7 @@ const Map: React.FC<{
           </Popup>
         )}
       </ReactMapGL>
-    </>
+    </div>
   );
 };
 
