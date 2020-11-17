@@ -2,69 +2,18 @@ import React from 'react';
 import ReactMapGL, { PointerEvent, Popup } from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
 import { getWindowSize } from '@src/components/helpers/map-helpers';
-import mapboxgl from 'mapbox-gl';
 import { colors } from '@src/utils/theme';
 import { getCountryNameFromCode } from '@src/utils/country-mapping';
 import LegendItem from '@src/components/Legend/LegendItem';
 import LoadingSvg from '@src/components/LoadingIcon';
-import debounce from 'lodash.debounce';
-import { countryDataSource, MapStatus } from '@src/components/Map/map-helpers';
-
-const setHoveredCountry = debounce(
-  ({
-    e,
-    hoveredFeatureId,
-    popupVisible,
-    setHoveredFeatureId,
-    setBackgroundHoveredFeatureId,
-  }: {
-    e: PointerEvent;
-    hoveredFeatureId: null | string | number;
-    popupVisible: boolean;
-    setHoveredFeatureId: (iso: string | null) => void;
-    setBackgroundHoveredFeatureId: (iso: string | null) => void;
-  }) => {
-    if (!e.features) {
-      return;
-    }
-    const countryFeature = e.features.find(
-      (feature) => feature.layer.id === 'country-status',
-    );
-
-    if (
-      (!hoveredFeatureId && countryFeature) ||
-      (countryFeature && countryFeature.properties.ISO_A2 !== hoveredFeatureId)
-    ) {
-      if (!popupVisible) {
-        setHoveredFeatureId(countryFeature.properties.ISO_A2);
-      }
-      setBackgroundHoveredFeatureId(countryFeature.properties.ISO_A2);
-      return;
-    }
-    if (hoveredFeatureId && !countryFeature) {
-      if (!popupVisible) {
-        setHoveredFeatureId(null);
-      }
-      setBackgroundHoveredFeatureId(null);
-    }
-  },
-  100,
-  {
-    maxWait: 100,
-  },
-);
-
-/**
- * Mapbox Expression Helper
- * Returns expression that evaluates to true or false if the selected field is in a given array
- */
-const includesField = (field: string) => (array: (string | number)[]) => [
-  'in',
-  ['get', field],
-  ['literal', array],
-];
-
-const includesIso = includesField('ISO_A2');
+import {
+  countryDataSource,
+  MapStatus,
+  setHoveredCountry,
+  includesIso,
+  getCountryStatusSets,
+} from '@src/components/Map/map-helpers';
+import CountryPopup from '@src/components/Map/CountryPopup';
 
 const Map: React.FC<{
   iso: string;
@@ -97,27 +46,13 @@ const Map: React.FC<{
     zoom: 1,
   });
 
-  const covidBannedCountries = countryDetailsList
-    .filter(({ details: { covidBan } }) => covidBan)
-    .map((countryDetail) => countryDetail.code);
-
-  const visaFreeCountries = countryDetailsList
-    .filter(({ details }) => !details.visaRequired)
-    .map((countryDetail) => countryDetail.code)
-    .filter((code) => !covidBannedCountries.includes(code));
-
-  const eVisa = countryDetailsList
-    .filter(({ details: { eVisa } }) => eVisa)
-    .map(({ code }) => code);
-
-  const visaOnArrivalCountries = countryDetailsList
-    .filter(({ details: { visaOnArrival } }) => visaOnArrival)
-    .map((countryDetail) => countryDetail.code);
-
-  const visaRequired = countryDetailsList
-    .filter(({ details: { visaRequired } }) => visaRequired)
-    .map(({ code }) => code)
-    .filter((code) => !visaOnArrivalCountries.includes(code));
+  const {
+    covidBannedCountries,
+    visaFreeCountries,
+    eVisa,
+    visaOnArrivalCountries,
+    visaRequired,
+  } = getCountryStatusSets(countryDetailsList);
 
   React.useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -285,55 +220,12 @@ const Map: React.FC<{
         }}
       >
         {popupVisible && (
-          <Popup
-            latitude={popupDetails.lngLat[1]}
-            longitude={popupDetails.lngLat[0]}
-            closeButton={false}
-            closeOnClick={false}
+          <CountryPopup
+            iso={iso}
+            popupDetails={popupDetails}
+            hoveredCountryDetail={hoveredCountryDetail}
             onClose={() => setPopupVisible(false)}
-            anchor="top"
-          >
-            <div>
-              <h3 className="font-bold">
-                {getCountryNameFromCode(hoveredCountryDetail.code)}
-              </h3>
-              <div className="max-w-1/2">
-                {hoveredCountryDetail.details.covidBan && (
-                  <LegendItem
-                    color={colors['covid-ban']}
-                    description={`Covid-19 travel restrictions for ${getCountryNameFromCode(
-                      iso,
-                    )}`}
-                  />
-                )}
-                {hoveredCountryDetail.details.eVisa && (
-                  <LegendItem
-                    color={colors['e-visa']}
-                    description={`E-Visa available`}
-                  />
-                )}
-                {hoveredCountryDetail.details.visaOnArrival && (
-                  <LegendItem
-                    color={colors['on-arrival']}
-                    description={`Visa available on arrival`}
-                  />
-                )}
-                {hoveredCountryDetail.details.visaRequired && (
-                  <LegendItem
-                    color={colors.required}
-                    description={`Visa Required`}
-                  />
-                )}
-                {!hoveredCountryDetail.details.visaRequired &&
-                  !hoveredCountryDetail.details.covidBan && (
-                    <LegendItem
-                      color={colors['visa-free']}
-                      description={`Travel is possible`}
-                    />
-                  )}
-              </div>
-            </div>
-          </Popup>
+          />
         )}
       </ReactMapGL>
     </div>
