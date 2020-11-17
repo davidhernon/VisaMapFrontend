@@ -1,16 +1,15 @@
 import React from 'react';
-import ReactMapGL, { PointerEvent, Popup } from 'react-map-gl';
+import ReactMapGL, { PointerEvent } from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
 import { getWindowSize } from '@src/components/helpers/map-helpers';
-import { colors } from '@src/utils/theme';
 import LoadingSvg from '@src/components/LoadingIcon';
 import {
   countryDataSource,
   MapStatus,
   setHoveredCountry,
-  includesIso,
   getCountryStatusSets,
   getCountryFeatureFromPointerEvent,
+  getCountryStatusLayer,
 } from '@src/components/Map/map-helpers';
 import CountryPopup from '@src/components/Map/CountryPopup';
 
@@ -46,13 +45,34 @@ const Map: React.FC<{
     zoom: 1,
   });
 
-  const {
-    covidBannedCountries,
-    visaFreeCountries,
-    eVisa,
-    visaOnArrivalCountries,
-    visaRequired,
-  } = getCountryStatusSets(countryDetailsList);
+  const [
+    {
+      covidBannedCountries,
+      visaFreeCountries,
+      eVisa,
+      visaOnArrivalCountries,
+      visaRequired,
+    },
+    setCountryStatusSets,
+  ] = React.useState<{
+    covidBannedCountries: string[];
+    visaFreeCountries: string[];
+    eVisa: string[];
+    visaOnArrivalCountries: string[];
+    visaRequired: string[];
+  }>({
+    covidBannedCountries: [],
+    visaFreeCountries: [],
+    eVisa: [],
+    visaOnArrivalCountries: [],
+    visaRequired: [],
+  });
+
+  // When country details list changes well call the helper to create sets of country iso codes that pertain to each case
+  // This will be used when we fill the layer, this effect will only run once when the user selects the country iso code
+  React.useEffect(() => {
+    setCountryStatusSets(getCountryStatusSets(countryDetailsList));
+  }, [countryDetailsList]);
 
   React.useEffect(() => {
     if (
@@ -70,34 +90,14 @@ const Map: React.FC<{
     }
 
     map.addLayer(
-      {
-        id: 'country-status',
-        source: countryDataSource.id,
-        type: 'fill',
-        paint: {
-          'fill-color': [
-            'case',
-            includesIso(covidBannedCountries),
-            colors['covid-ban'],
-            includesIso(eVisa),
-            colors['e-visa'],
-            includesIso(visaOnArrivalCountries),
-            colors['on-arrival'],
-            includesIso(visaFreeCountries),
-            colors['visa-free'],
-            includesIso(visaRequired),
-            colors.required,
-            colors['no-data'],
-          ],
-          'fill-outline-color': '#F2F2F2',
-          'fill-opacity': [
-            'case',
-            ['==', ['get', 'ISO_A2'], hoveredFeatureId],
-            1,
-            0.75,
-          ],
-        },
-      },
+      getCountryStatusLayer(
+        hoveredFeatureId,
+        covidBannedCountries,
+        visaOnArrivalCountries,
+        visaFreeCountries,
+        visaRequired,
+        eVisa,
+      ),
       'country-label-sm',
     );
   }, [

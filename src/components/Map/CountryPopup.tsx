@@ -20,40 +20,44 @@ const CountryPopup: React.FC<{
   >
     <div>
       <h3 className="font-bold">
-        {getCountryNameFromCode(hoveredCountryDetail.code)}
+        {hoveredCountryDetail
+          ? getCountryNameFromCode(hoveredCountryDetail.code)
+          : 'No Data'}
       </h3>
-      <div className="max-w-1/2">
-        {hoveredCountryDetail.details.covidBan && (
-          <LegendItem
-            color={colors['covid-ban']}
-            description={`Covid-19 travel restrictions for ${getCountryNameFromCode(
-              iso,
-            )}`}
-          />
-        )}
-        {hoveredCountryDetail.details.eVisa && (
-          <LegendItem
-            color={colors['e-visa']}
-            description={`E-Visa available`}
-          />
-        )}
-        {hoveredCountryDetail.details.visaOnArrival && (
-          <LegendItem
-            color={colors['on-arrival']}
-            description={`Visa available on arrival`}
-          />
-        )}
-        {hoveredCountryDetail.details.visaRequired && (
-          <LegendItem color={colors.required} description={`Visa Required`} />
-        )}
-        {!hoveredCountryDetail.details.visaRequired &&
-          !hoveredCountryDetail.details.covidBan && (
+      {hoveredCountryDetail && (
+        <div className="max-w-1/2">
+          {hoveredCountryDetail.details.covidBan && (
             <LegendItem
-              color={colors['visa-free']}
-              description={`Travel is possible`}
+              color={colors['covid-ban']}
+              description={`Covid-19 travel restrictions for ${getCountryNameFromCode(
+                iso,
+              )}`}
             />
           )}
-      </div>
+          {hoveredCountryDetail.details.eVisa && (
+            <LegendItem
+              color={colors['e-visa']}
+              description={`E-Visa available`}
+            />
+          )}
+          {hoveredCountryDetail.details.visaOnArrival && (
+            <LegendItem
+              color={colors['on-arrival']}
+              description={`Visa available on arrival`}
+            />
+          )}
+          {hoveredCountryDetail.details.visaRequired && (
+            <LegendItem color={colors.required} description={`Visa Required`} />
+          )}
+          {!hoveredCountryDetail.details.visaRequired &&
+            !hoveredCountryDetail.details.covidBan && (
+              <LegendItem
+                color={colors['visa-free']}
+                description={`Travel is possible`}
+              />
+            )}
+        </div>
+      )}
     </div>
   </Popup>
 );
