@@ -93,7 +93,6 @@ const setHoveredCountry = debounce(
     setHoveredFeatureId: (iso: string | null) => void;
     setBackgroundHoveredFeatureId: (iso: string | null) => void;
   }) => {
-    console.log('set hver');
     if (!e.features) {
       return;
     }
