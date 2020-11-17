@@ -1,5 +1,5 @@
 import React from 'react';
-import Map from '@src/components/map';
+import Map from '@src/components/Map';
 import { CountryDetails } from 'types/map-types';
 import { convertCountryDetailModuleToList } from '@src/utils/json-data-utils';
 import { useRouter } from 'next/dist/client/router';
