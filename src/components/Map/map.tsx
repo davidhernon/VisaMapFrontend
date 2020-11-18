@@ -10,6 +10,7 @@ import {
   getCountryStatusSets,
   getCountryFeatureFromPointerEvent,
   getCountryStatusLayer,
+  getFirstSymbolIdFromMapLayers,
 } from '@src/components/Map/map-helpers';
 import CountryPopup from '@src/components/Map/CountryPopup';
 
@@ -44,6 +45,9 @@ const Map: React.FC<{
     longitude: 0,
     zoom: 1,
   });
+  const [firstLayer, setFirstLayer] = React.useState<string>(
+    'country-label-sm',
+  );
 
   const [
     {
@@ -98,7 +102,7 @@ const Map: React.FC<{
         visaRequired,
         eVisa,
       ),
-      'country-label-sm',
+      firstLayer,
     );
   }, [
     covidBannedCountries,
@@ -139,6 +143,7 @@ const Map: React.FC<{
     });
 
     map.on('load', () => {
+      setFirstLayer(getFirstSymbolIdFromMapLayers(map)); // keeps track of lowest layer so we can add our choropleth behind it
       map.addSource(countryDataSource.id, countryDataSource.source);
     });
   }, [mapRef]);

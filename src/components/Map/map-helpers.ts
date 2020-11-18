@@ -150,3 +150,16 @@ export const getCountryStatusLayer = (
     },
   };
 };
+
+export const getFirstSymbolIdFromMapLayers = (map: mapboxgl.Map) => {
+  var layers = map.getStyle().layers || [];
+  // Find the index of the first symbol layer in the map style
+  var firstSymbolId = 'country-label-sm'; // a known label to start
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].type === 'symbol') {
+      firstSymbolId = layers[i].id;
+      break;
+    }
+  }
+  return firstSymbolId;
+};
