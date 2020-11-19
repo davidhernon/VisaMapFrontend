@@ -21,7 +21,6 @@ const Home = () => {
    * Use store drive by RouteIsoSelector
    */
   const router = useRouter();
-  const path = router.pathname;
   const { iso } = router.query;
   const isoFormatted = typeof iso === 'string' ? iso.toUpperCase() : 'US';
   //
