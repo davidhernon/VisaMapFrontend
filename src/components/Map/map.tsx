@@ -192,6 +192,7 @@ const Map: React.FC<{
         </span>
       )}
       <ReactMapGL
+        dragRotate={false}
         ref={mapRef}
         getCursor={(e) => {
           if (hoveredFeatureId && !popupVisible) {

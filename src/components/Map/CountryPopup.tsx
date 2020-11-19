@@ -8,7 +8,33 @@ import {
   CountryTravelRestriction,
   Feature,
 } from 'types/travel-restrictions-types';
-import { features } from 'process';
+import Markdown from '@src/components/Markdown';
+
+enum TravelStatus {
+  MAJOR = 'MAJOR', // '🚨',
+  MODERATE = 'MODERATE', //'🚧',
+  LOW = 'LOW', // '❎',
+  UNKNOWN = 'UNKNOWN',
+}
+
+const TravelStatusLabel: React.FC = ({ children }) => (
+  <span className="text-sm border-2 text-gray-600 p-1 rounded font-bold">
+    {children}
+  </span>
+);
+
+const getTravelStatusIcon = (status: TravelStatus) => {
+  switch (status) {
+    case TravelStatus.MAJOR:
+      return <TravelStatusLabel>Major restrictions 🚨</TravelStatusLabel>;
+    case TravelStatus.MODERATE:
+      return <TravelStatusLabel>Moderate restrictions 🚧</TravelStatusLabel>;
+    case TravelStatus.LOW:
+      return <TravelStatusLabel>Low restrictions ❎</TravelStatusLabel>;
+    default:
+      return '';
+  }
+};
 
 const CountryPopup: React.FC<{
   iso: string;
@@ -45,6 +71,8 @@ const CountryPopup: React.FC<{
   }, [hoveredCountryDetail]);
   return (
     <Popup
+      captureScroll={true}
+      className="w-1/2 h-1/2 p-0"
       latitude={popupDetails.lngLat[1]}
       longitude={popupDetails.lngLat[0]}
       closeButton={false}
@@ -53,77 +81,97 @@ const CountryPopup: React.FC<{
       anchor="top"
     >
       <div>
-        <h3 className="font-bold">
-          {hoveredCountryDetail
-            ? getCountryNameFromCode(hoveredCountryDetail.code)
-            : 'No Data'}
-        </h3>
-        {hoveredCountryDetail && (
-          <div className="max-w-1/2">
-            {hoveredCountryDetail.details.covidBan && (
-              <LegendItem
-                color={colors['covid-ban']}
-                description={`Covid-19 travel restrictions for ${getCountryNameFromCode(
-                  iso,
-                )}`}
-              />
+        <div className="p-2">
+          <div className="flex justify-between">
+            <h3 className="font-bold">
+              {hoveredCountryDetail
+                ? getCountryNameFromCode(hoveredCountryDetail.code)
+                : 'No Country Selected'}
+            </h3>
+            {feature && (
+              <div>
+                {getTravelStatusIcon(
+                  feature.properties.restrictions
+                    .master_travel_status as TravelStatus,
+                )}
+              </div>
             )}
-            {hoveredCountryDetail.details.eVisa && (
-              <LegendItem
-                color={colors['e-visa']}
-                description={`E-Visa available`}
-              />
-            )}
-            {hoveredCountryDetail.details.visaOnArrival && (
-              <LegendItem
-                color={colors['on-arrival']}
-                description={`Visa available on arrival`}
-              />
-            )}
-            {hoveredCountryDetail.details.visaRequired && (
-              <LegendItem
-                color={colors.required}
-                description={`Visa Required`}
-              />
-            )}
-            {!hoveredCountryDetail.details.visaRequired &&
-              !hoveredCountryDetail.details.covidBan && (
+          </div>
+          {hoveredCountryDetail && (
+            <div>
+              {(hoveredCountryDetail.details.covidBan ||
+                (feature &&
+                  feature.properties.restrictions
+                    .destination_self_isolation_translation ===
+                    'Quarantine required')) && (
                 <LegendItem
-                  color={colors['visa-free']}
-                  description={`Travel is possible`}
+                  color={colors['covid-ban']}
+                  description={`Travel restrictions in place`}
                 />
               )}
-          </div>
-        )}
+              {hoveredCountryDetail.details.eVisa && (
+                <LegendItem
+                  color={colors['e-visa']}
+                  description={`E-Visa available`}
+                />
+              )}
+              {hoveredCountryDetail.details.visaOnArrival && (
+                <LegendItem
+                  color={colors['on-arrival']}
+                  description={`Visa available on arrival`}
+                />
+              )}
+              {hoveredCountryDetail.details.visaRequired && (
+                <LegendItem
+                  color={colors.required}
+                  description={`Visa Required`}
+                />
+              )}
+              {!hoveredCountryDetail.details.visaRequired &&
+                !hoveredCountryDetail.details.covidBan &&
+                !(
+                  feature &&
+                  feature.properties.restrictions
+                    .destination_self_isolation_translation ===
+                    'Quarantine required'
+                ) && (
+                  <LegendItem
+                    color={colors['visa-free']}
+                    description={`Travel possible`}
+                  />
+                )}
+            </div>
+          )}
+        </div>
         {feature && (
-          <>
-            <div>
-              status: {feature.properties.restrictions.master_travel_status}
+          <div className="overflow-y-scroll h-40 p-2 border-t border-gray-400">
+            <div className="font-bold text-gray-700 pb-1">
+              <div>
+                🛫{' '}
+                {
+                  feature.properties.restrictions
+                    .destination_self_isolation_translation
+                }
+                {' on arrival.'}
+              </div>
+              <div>
+                🛬{' '}
+                {
+                  feature.properties.restrictions
+                    .return_self_isolation_translation
+                }
+                {' on return.'}
+              </div>
             </div>
             <div>
-              Travel Quarantine:
-              {
-                feature.properties.restrictions
-                  .destination_self_isolation_translation
-              }
+              <Markdown>
+                {
+                  feature.properties.restrictions
+                    .destination_restrictions_commentary_translation
+                }
+              </Markdown>
             </div>
-            <div>
-              Return Quarantine:
-              {
-                feature.properties.restrictions
-                  .return_self_isolation_translation
-              }
-            </div>
-            <div>
-              {feature.properties.restrictions.entry_restrictions_translation}
-            </div>
-            <div>
-              {
-                feature.properties.restrictions
-                  .destination_restrictions_commentary_translation
-              }
-            </div>
-          </>
+          </div>
         )}
       </div>
     </Popup>

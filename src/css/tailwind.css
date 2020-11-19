@@ -4,3 +4,19 @@
 
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+@layer base {
+  ol {
+    @apply list-inside;
+    @apply list-decimal;
+  }
+  ul {
+    @apply list-inside;
+    @apply list-disc;
+  }
+  ,
+  a {
+    @apply text-blue-600;
+    @apply underline;
+  }
+}
