@@ -13,12 +13,14 @@ import {
   getFirstSymbolIdFromMapLayers,
 } from '@src/components/Map/map-helpers';
 import CountryPopup from '@src/components/Map/CountryPopup';
+import { CountryTravelRestriction } from 'types/travel-restrictions-types';
 
 const Map: React.FC<{
   iso: string;
   token: string;
+  restrictions: CountryTravelRestriction;
   countryDetailsList: CountryDetails[];
-}> = ({ countryDetailsList, iso, token }) => {
+}> = ({ countryDetailsList, iso, restrictions, token }) => {
   const mapRef = React.useRef<null | ReactMapGL>(null);
   const [map, setMap] = React.useState<null | mapboxgl.Map>(null);
   const [popupVisible, setPopupVisible] = React.useState<boolean>(false);

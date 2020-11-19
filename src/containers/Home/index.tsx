@@ -3,9 +3,17 @@ import Map from '@src/components/Map';
 import { CountryDetails } from 'types/map-types';
 import { convertCountryDetailModuleToList } from '@src/utils/json-data-utils';
 import { useRouter } from 'next/dist/client/router';
-import { getCountryNameFromCode } from '@src/utils/country-mapping';
+import {
+  getCountryNameFromCode,
+  getSlugFromCode,
+} from '@src/utils/country-mapping';
 import IsoSelector from '@src/components/IsoSelector';
 import Legend from '@src/components/Legend/Legend';
+import {
+  getRestrictions,
+  placeholderRestrictions,
+} from '@src/services/travel-restriction-api';
+import { CountryTravelRestriction } from 'types/travel-restrictions-types';
 
 const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
   const { MAPBOX_TOKEN } = process.env; // https://github.com/vercel/next.js/issues/6888
@@ -14,7 +22,13 @@ const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
   const [countryDetailsList, setCountryDetailsList] = React.useState<
     CountryDetails[]
   >([]);
+  const [restrictions, setRestrictions] = React.useState<
+    CountryTravelRestriction
+  >(placeholderRestrictions);
   React.useEffect(() => {
+    getRestrictions(getSlugFromCode(iso)).then((restrictions) =>
+      setRestrictions(restrictions),
+    );
     import(`../../../public/json/${iso}.json`).then((countryDetailModule) => {
       const countryDetailsList = convertCountryDetailModuleToList(
         countryDetailModule,
@@ -40,6 +54,7 @@ const Home: React.FC<{ iso?: string }> = ({ iso = 'US' }) => {
       {MAPBOX_TOKEN && (
         <Map
           countryDetailsList={countryDetailsList}
+          restrictions={restrictions}
           iso={iso}
           token={MAPBOX_TOKEN}
         ></Map>

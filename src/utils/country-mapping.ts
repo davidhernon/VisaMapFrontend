@@ -9,6 +9,14 @@ export const getCountryCodeFromName = (countryName: string): string => {
   throw new Error(`No Country Code found for: ${countryName}`);
 };
 
+export const getSlugFromCode = (code: string) => {
+  const country = countryCodeMap.find((country) => country.code === code);
+  if (country) {
+    return country.slug;
+  }
+  throw new Error(`No slug found for: ${code}`);
+};
+
 export const getCountryNameFromCode = (code: string): string => {
   const country = countryCodeMap.find((country) => country.code === code);
   if (country) {

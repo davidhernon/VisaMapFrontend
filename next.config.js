@@ -4,7 +4,8 @@ require('dotenv').config()
 const ENV_VARS = {
   SITE_NAME: process.env.SITE_NAME,
   MAPBOX_TOKEN: process.env.MAPBOX_TOKEN,
-  GA_TRACKING_ID: process.env.GA_TRACKING_ID
+  GA_TRACKING_ID: process.env.GA_TRACKING_ID,
+  TRAVEL_API_URL: process.env.TRAVEL_API_URL
 }
 
 module.exports = {
