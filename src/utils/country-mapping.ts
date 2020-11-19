@@ -10,7 +10,11 @@ export const getCountryCodeFromName = (countryName: string): string => {
 };
 
 export const getSlugFromCode = (code: string) => {
-  const country = countryCodeMap.find((country) => country.code === code);
+  const country = countryCodeMap.find(
+    (country) =>
+      country.code === code ||
+      (country.secondaryCode && country.secondaryCode === code),
+  );
   if (country) {
     return country.slug;
   }
@@ -25,7 +29,12 @@ export const getCountryNameFromCode = (code: string): string => {
   throw new Error(`Couldnt find a country name for code: ${code}`);
 };
 
-export const countryCodeMap: { name: string; code: string; slug: string }[] = [
+export const countryCodeMap: {
+  name: string;
+  code: string;
+  slug: string;
+  secondaryCode?: string;
+}[] = [
   { name: 'United States', code: 'US', slug: 'united-states' },
   { name: 'Uruguay', code: 'UY', slug: 'uruguay' },
   { name: 'Uzbekistan', code: 'UZ', slug: 'uzbekistan' },
@@ -244,5 +253,10 @@ export const countryCodeMap: { name: string; code: string; slug: string }[] = [
   { name: 'Uganda', code: 'UG', slug: 'uganda' },
   { name: 'Ukraine', code: 'UA', slug: 'ukraine' },
   { name: 'United Arab Emirates', code: 'AE', slug: 'united-arab-emirates' },
-  { name: 'United Kingdom', code: 'GB', slug: 'united-kingdom' },
+  {
+    name: 'United Kingdom',
+    code: 'GB',
+    secondaryCode: 'UK',
+    slug: 'united-kingdom',
+  },
 ];

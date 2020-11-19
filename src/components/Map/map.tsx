@@ -233,6 +233,7 @@ const Map: React.FC<{
             popupDetails={popupDetails}
             hoveredCountryDetail={hoveredCountryDetail}
             onClose={() => setPopupVisible(false)}
+            restrictions={restrictions}
           />
         )}
       </ReactMapGL>
