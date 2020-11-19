@@ -86,7 +86,7 @@ const CountryPopup: React.FC<{
             <h3 className="font-bold">
               {hoveredCountryDetail
                 ? getCountryNameFromCode(hoveredCountryDetail.code)
-                : 'No Country Selected'}
+                : 'No Data'}
             </h3>
             {feature && (
               <div>
