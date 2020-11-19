@@ -1,15 +1,15 @@
 import React from 'react';
 import { countryCodeMap } from '@src/utils/country-mapping';
 
-const IsoSelector: React.FC<{
-  iso: string;
+const CountrySelect: React.FC<{
+  defaultValue: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}> = ({ iso, onChange }) => (
+}> = ({ defaultValue, onChange }) => (
   <select
     className="w-full bg-gray-300"
     name="iso"
     onChange={onChange}
-    defaultValue={iso}
+    defaultValue={defaultValue}
   >
     {countryCodeMap.map(({ code, name }) => (
       <option key={code} value={code}>
@@ -19,4 +19,4 @@ const IsoSelector: React.FC<{
   </select>
 );
 
-export default IsoSelector;
+export default CountrySelect;
