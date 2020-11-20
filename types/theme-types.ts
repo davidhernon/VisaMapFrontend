@@ -22,13 +22,14 @@ export interface Theme {
         'covid-ban': string;
         gray: ColorSet;
         red: ColorSet;
-        amber: ColorSet;
+        yellow: ColorSet;
         emerald: ColorSet;
         blue: ColorSet;
         indigo: ColorSet;
         purple: ColorSet;
         pink: ColorSet;
         green: ColorSet;
+        orange: ColorSet;
       };
     };
   };
