@@ -20,16 +20,16 @@ export interface Theme {
         'e-visa': string;
         'visa-free': string;
         'covid-ban': string;
+        gray: ColorSet;
+        red: ColorSet;
+        amber: ColorSet;
+        emerald: ColorSet;
+        blue: ColorSet;
+        indigo: ColorSet;
+        purple: ColorSet;
+        pink: ColorSet;
+        green: ColorSet;
       };
-      gray: ColorSet;
-      red: ColorSet;
-      amber: ColorSet;
-      emerald: ColorSet;
-      blue: ColorSet;
-      indigo: ColorSet;
-      purple: ColorSet;
-      pink: ColorSet;
-      green: ColorSet;
     };
   };
 }
