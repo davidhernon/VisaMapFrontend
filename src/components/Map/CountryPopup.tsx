@@ -105,25 +105,25 @@ const CountryPopup: React.FC<{
                     .destination_self_isolation_translation ===
                     'Quarantine required')) && (
                 <LegendItem
-                  color={colors['covid-ban']}
-                  description={`Travel restrictions in place`}
+                  color={colors['brick-red'][500]}
+                  description={`Travel ban`}
                 />
               )}
               {hoveredCountryDetail.details.eVisa && (
                 <LegendItem
-                  color={colors['e-visa']}
+                  color={colors['picton-blue'][500]}
                   description={`E-Visa available`}
                 />
               )}
               {hoveredCountryDetail.details.visaOnArrival && (
                 <LegendItem
-                  color={colors['on-arrival']}
+                  color={colors['picton-blue'][700]}
                   description={`Visa available on arrival`}
                 />
               )}
               {hoveredCountryDetail.details.visaRequired && (
                 <LegendItem
-                  color={colors.required}
+                  color={colors['yellow-sea'][500]}
                   description={`Visa Required`}
                 />
               )}
@@ -136,7 +136,7 @@ const CountryPopup: React.FC<{
                     'Quarantine required'
                 ) && (
                   <LegendItem
-                    color={colors['visa-free']}
+                    color={colors.emerald[500]}
                     description={`Travel possible`}
                   />
                 )}

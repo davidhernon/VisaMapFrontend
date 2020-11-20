@@ -2,6 +2,7 @@ import { colors } from '@src/utils/theme';
 import debounce from 'lodash.debounce';
 import { PointerEvent } from 'react-map-gl';
 import { CountryDetails } from 'types/map-types';
+import { CountryTravelRestriction } from 'types/travel-restrictions-types';
 
 export const COUNTRY_LAYER_ID = 'country-status';
 
@@ -113,14 +114,27 @@ export const getCountryFeatureFromPointerEvent = (e: PointerEvent) =>
   e.features &&
   e.features.find((feature) => feature.layer.id === COUNTRY_LAYER_ID);
 
-export const getCountryStatusLayer = (
-  hoveredFeatureId: string | number | null,
-  covidBannedCountries: string[],
-  visaOnArrivalCountries: string[],
-  visaFreeCountries: string[],
-  visaRequired: string[],
-  eVisa: string[],
-): mapboxgl.Layer => {
+interface getCountryStatusLayerProps {
+  hoveredFeatureId: string | number | null;
+  lowTravelRestrictions: string[]; //array of iso2 codes
+  majorTravelRestrictions: string[]; //array of iso2 codes
+  moderateTravelRestrictions: string[]; //array of iso2 codes
+  covidBannedCountries: string[];
+  visaOnArrivalCountries: string[];
+  visaFreeCountries: string[];
+  visaRequired: string[];
+  eVisa: string[];
+}
+export const getCountryStatusLayer = ({
+  hoveredFeatureId,
+  majorTravelRestrictions,
+  moderateTravelRestrictions,
+  covidBannedCountries,
+  visaOnArrivalCountries,
+  visaFreeCountries,
+  visaRequired,
+  eVisa,
+}: getCountryStatusLayerProps): mapboxgl.Layer => {
   return {
     id: 'country-status',
     source: countryDataSource.id,
@@ -129,16 +143,28 @@ export const getCountryStatusLayer = (
       'fill-color': [
         'case',
         includesIso(covidBannedCountries),
-        colors['covid-ban'],
+        colors['brick-red'][500],
         includesIso(eVisa),
-        colors['e-visa'],
+        colors['picton-blue'][500],
         includesIso(visaOnArrivalCountries),
-        colors['on-arrival'],
-        includesIso(visaFreeCountries),
-        colors['visa-free'],
+        colors['picton-blue'][700],
+        [
+          'all',
+          includesIso(visaFreeCountries),
+          ['in', ['get', 'ISO_A2'], ['literal', majorTravelRestrictions]],
+        ],
+        colors['yellow']['400'],
+        [
+          'all',
+          includesIso(visaFreeCountries),
+          ['in', ['get', 'ISO_A2'], ['literal', moderateTravelRestrictions]],
+        ],
+        colors['orange']['600'],
+        ['all', includesIso(visaFreeCountries)],
+        colors.emerald[500],
         includesIso(visaRequired),
-        colors.required,
-        colors['no-data'],
+        colors['yellow-sea'][500],
+        colors['gull-gray'][500],
       ],
       'fill-outline-color': '#F2F2F2',
       'fill-opacity': [

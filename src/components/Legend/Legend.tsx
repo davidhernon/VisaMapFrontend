@@ -4,27 +4,27 @@ import LegendItem from './LegendItem';
 const LegendItems = [
   {
     description: 'Covid-19 Ban',
-    color: colors['covid-ban'],
+    color: colors['brick-red'][500],
   },
   {
     description: 'Visa Free',
-    color: colors['visa-free'],
+    color: colors.emerald[500],
   },
   {
     description: 'E-Visa',
-    color: colors['e-visa'],
+    color: colors['picton-blue'][500],
   },
   {
     description: 'Visa On Arrival',
-    color: colors['on-arrival'],
+    color: colors['picton-blue'][700],
   },
   {
     description: 'Visa Required',
-    color: colors.required,
+    color: colors['yellow-sea'][500],
   },
   {
     description: 'No Data',
-    color: colors['no-data'],
+    color: colors['gull-gray'][500],
   },
 ];
 

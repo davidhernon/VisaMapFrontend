@@ -14,22 +14,26 @@ export interface Theme {
   theme: {
     extend: {
       colors: {
-        'no-data': string;
-        required: string;
-        'on-arrival': string;
-        'e-visa': string;
-        'visa-free': string;
-        'covid-ban': string;
+        // 'no-data': string;
+        // required: string;
+        // 'on-arrival': string;
+        // 'e-visa': string;
+        // 'visa-free': string;
+        // 'covid-ban': string;
         gray: ColorSet;
         red: ColorSet;
         yellow: ColorSet;
-        emerald: ColorSet;
         blue: ColorSet;
         indigo: ColorSet;
         purple: ColorSet;
         pink: ColorSet;
         green: ColorSet;
         orange: ColorSet;
+        emerald: ColorSet;
+        'gull-gray': ColorSet;
+        'picton-blue': ColorSet;
+        'brick-red': ColorSet;
+        'yellow-sea': ColorSet;
       };
     };
   };

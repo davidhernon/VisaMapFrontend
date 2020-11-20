@@ -47,6 +47,7 @@ const Map: React.FC<{
     longitude: 0,
     zoom: 1,
   });
+  // Keep track of what the first painted layer is so we can draw the choropleth underneath labels etc
   const [firstLayer, setFirstLayer] = React.useState<string>(
     'country-label-sm',
   );
@@ -94,16 +95,62 @@ const Map: React.FC<{
     if (layer) {
       map.removeLayer('country-status');
     }
+    console.log(restrictions);
 
+    // @todo - make hover UI a separate layer so we don't have to calc this every time it changes
     map.addLayer(
-      getCountryStatusLayer(
+      getCountryStatusLayer({
         hoveredFeatureId,
         covidBannedCountries,
+        lowTravelRestrictions: restrictions.source.features.reduce<string[]>(
+          (accum, feature) => {
+            if (
+              (feature.properties.restrictions?.master_travel_status ||
+                'UNKNOWN') === 'LOW'
+            ) {
+              if (feature.properties.country_code === 'GB') {
+                return [...accum, 'UK'];
+              }
+              return [...accum, feature.properties.country_code];
+            }
+            return accum;
+          },
+          [],
+        ),
+        majorTravelRestrictions: restrictions.source.features.reduce<string[]>(
+          (accum, feature) => {
+            if (
+              (feature.properties.restrictions?.master_travel_status ||
+                'UNKNOWN') === 'MAJOR'
+            ) {
+              if (feature.properties.country_code === 'GB') {
+                return [...accum, 'UK'];
+              }
+              return [...accum, feature.properties.country_code];
+            }
+            return accum;
+          },
+          [],
+        ),
+        moderateTravelRestrictions: restrictions.source.features.reduce<
+          string[]
+        >((accum, feature) => {
+          if (
+            (feature.properties.restrictions?.master_travel_status ||
+              'UNKNOWN') === 'MODERATE'
+          ) {
+            if (feature.properties.country_code === 'GB') {
+              return [...accum, 'UK'];
+            }
+            return [...accum, feature.properties.country_code];
+          }
+          return accum;
+        }, []),
         visaOnArrivalCountries,
         visaFreeCountries,
         visaRequired,
         eVisa,
-      ),
+      }),
       firstLayer,
     );
   }, [
