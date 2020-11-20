@@ -95,7 +95,6 @@ const Map: React.FC<{
     if (layer) {
       map.removeLayer('country-status');
     }
-    console.log(restrictions);
 
     // @todo - make hover UI a separate layer so we don't have to calc this every time it changes
     map.addLayer(
