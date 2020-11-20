@@ -125,8 +125,13 @@ interface getCountryStatusLayerProps {
   visaRequired: string[];
   eVisa: string[];
 }
+// Visa free, Major (lighter red), Moderate (pale green), None (green)
+// E-Visa, Major (lighter red), Moderate (picton blue), Low (deep blue), None deep blue
+// On Arrival (lighter red), Moderate (picton blue), Low (deep blue), None deep blue
+// Visa Required major (red), moderate (lightest red), Low (yellow-sea), None (yellow sea)
 export const getCountryStatusLayer = ({
   hoveredFeatureId,
+  lowTravelRestrictions,
   majorTravelRestrictions,
   moderateTravelRestrictions,
   covidBannedCountries,
@@ -142,28 +147,73 @@ export const getCountryStatusLayer = ({
     paint: {
       'fill-color': [
         'case',
-        includesIso(covidBannedCountries),
+        includesIso(covidBannedCountries), // banned countries coloured red
         colors['brick-red'][500],
-        includesIso(eVisa),
+        ['all', includesIso(eVisa), includesIso(majorTravelRestrictions)], // e visa, major
+        colors['brick-red'][400],
+        ['all', includesIso(eVisa), includesIso(moderateTravelRestrictions)], // evisa, moderate
+        colors['yellow-sea'][400],
+        ['all', includesIso(eVisa), includesIso(lowTravelRestrictions)], // evisa, low
         colors['picton-blue'][500],
-        includesIso(visaOnArrivalCountries),
-        colors['picton-blue'][700],
+        includesIso(eVisa), // unkown restrictions, eVisa country
+        colors['picton-blue'][500],
         [
           'all',
-          includesIso(visaFreeCountries),
-          ['in', ['get', 'ISO_A2'], ['literal', majorTravelRestrictions]],
-        ],
-        colors['yellow']['400'],
+          includesIso(visaOnArrivalCountries),
+          includesIso(majorTravelRestrictions),
+        ], // arrival visa, major
+        colors['brick-red'][400],
         [
           'all',
-          includesIso(visaFreeCountries),
-          ['in', ['get', 'ISO_A2'], ['literal', moderateTravelRestrictions]],
-        ],
-        colors['orange']['600'],
-        ['all', includesIso(visaFreeCountries)],
-        colors.emerald[500],
-        includesIso(visaRequired),
+          includesIso(visaOnArrivalCountries),
+          includesIso(moderateTravelRestrictions),
+        ], // arrival visa, moderate
+        colors['yellow-sea'][400],
+        [
+          'all',
+          includesIso(visaOnArrivalCountries),
+          includesIso(lowTravelRestrictions),
+        ], // arrival visa, low
+        colors['picton-blue'][500],
+        includesIso(visaOnArrivalCountries), // unkown restrictions, arrival visa country
+        colors['picton-blue'][500],
+        // do colors here
+        [
+          'all',
+          includesIso(visaRequired),
+          includesIso(majorTravelRestrictions),
+        ], // arrival visa, major
+        colors['brick-red'][400],
+        [
+          'all',
+          includesIso(visaRequired),
+          includesIso(moderateTravelRestrictions),
+        ], // arrival visa, moderate
         colors['yellow-sea'][500],
+        ['all', includesIso(visaRequired), includesIso(lowTravelRestrictions)], // arrival visa, low
+        colors['yellow-sea'][400],
+        includesIso(visaRequired), // unkown restrictions, arrival visa country
+        colors['yellow-sea'][300],
+        [
+          'all',
+          includesIso(visaFreeCountries),
+          includesIso(majorTravelRestrictions),
+        ], // arrival visa, major
+        colors.emerald[200],
+        [
+          'all',
+          includesIso(visaFreeCountries),
+          includesIso(moderateTravelRestrictions),
+        ], // arrival visa, moderate
+        colors.emerald[400],
+        [
+          'all',
+          includesIso(visaFreeCountries),
+          includesIso(lowTravelRestrictions),
+        ], // arrival visa, low
+        colors.emerald[500],
+        includesIso(visaFreeCountries), // unkown restrictions, arrival visa country
+        colors.emerald[600],
         colors['gull-gray'][500],
       ],
       'fill-outline-color': '#F2F2F2',

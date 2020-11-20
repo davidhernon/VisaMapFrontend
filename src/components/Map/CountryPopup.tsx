@@ -99,11 +99,7 @@ const CountryPopup: React.FC<{
           </div>
           {hoveredCountryDetail && (
             <div>
-              {(hoveredCountryDetail.details.covidBan ||
-                (feature &&
-                  feature.properties.restrictions
-                    .destination_self_isolation_translation ===
-                    'Quarantine required')) && (
+              {hoveredCountryDetail.details.covidBan && (
                 <LegendItem
                   color={colors['brick-red'][500]}
                   description={`Travel ban`}
