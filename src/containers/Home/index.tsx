@@ -6,22 +6,18 @@ import {
   getCountryNameFromCode,
   getSlugFromCode,
 } from '@src/utils/country-mapping';
-import Legend from '@src/components/Legend/Legend';
 import {
   getRestrictions,
   placeholderRestrictions,
 } from '@src/services/travel-restriction-api';
 import { CountryTravelRestriction } from 'types/travel-restrictions-types';
-import { useRouter } from 'next/dist/client/router';
 import RouteIsoSelector from '@src/components/Select/RouteIsoSelector';
 
-const Home = () => {
+const Home: React.FC<{ iso: string }> = ({ iso }) => {
   /**
    * Deprecated: migrate to use a store intead
    * Use store drive by RouteIsoSelector
    */
-  const router = useRouter();
-  const { iso } = router.query;
   const isoFormatted = typeof iso === 'string' ? iso.toUpperCase() : 'US';
   //
   const { MAPBOX_TOKEN } = process.env; // https://github.com/vercel/next.js/issues/6888

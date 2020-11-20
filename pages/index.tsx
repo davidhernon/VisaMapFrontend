@@ -48,7 +48,7 @@ const Home: NextPage = () => {
           content="Get information on visa requirements and covid restrictions for the globe. If you must travel, check this first."
         />
       </Head>
-      <HomePage />
+      <HomePage iso={'US'} />
     </>
   );
 };
