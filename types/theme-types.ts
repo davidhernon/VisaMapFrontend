@@ -29,6 +29,7 @@ export interface Theme {
       indigo: ColorSet;
       purple: ColorSet;
       pink: ColorSet;
+      green: ColorSet;
     };
   };
 }
