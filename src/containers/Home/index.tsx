@@ -52,7 +52,6 @@ const Home = () => {
           Visa Restrictions for {getCountryNameFromCode(isoFormatted)}
         </h1>
         <RouteIsoSelector />
-        <Legend />
       </div>
       {MAPBOX_TOKEN && (
         <Map
